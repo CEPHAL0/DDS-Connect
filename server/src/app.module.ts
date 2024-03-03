@@ -4,6 +4,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { User } from './users/entitites/user.entity';
+import { UsersController } from './users/controllers/users/users.controller';
+import { UsersService } from './users/services/users/users.service';
 
 @Module({
   imports: [

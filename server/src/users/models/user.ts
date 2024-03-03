@@ -1,9 +1,7 @@
-import { roles } from "../entitites/user.entity"
-
-
-export class User{
-    id: number
-    username: string
-    password: string
-    role: roles
+export class User {
+  id: number;
+  username: string;
+  name: string;
+  password: string;
+  role: 'admin' | 'member' | 'user';
 }

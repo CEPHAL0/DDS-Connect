@@ -1,6 +1,5 @@
 export type ApiReponse<T> = {
-  success: boolean;
-  data: T | null;
-  message: string | null;
   statusCode: number;
+  message: string | null;
+  data: T | null;
 };

@@ -1,10 +1,5 @@
+import { IsEmail, IsNotEmpty } from 'class-validator';
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-
-export enum roles {
-  admin = 'admin',
-  member = 'member',
-  user = 'user',
-}
 
 @Entity()
 export class User {
@@ -15,8 +10,14 @@ export class User {
   username: string;
 
   @Column()
-  password: string;
+  name: string;
 
   @Column()
-  role: roles;
+  password: string;
+
+  @Column({ type: 'enum', enum: ['admin', 'manager', 'user'] })
+  role: string;
+
+  @Column({ unique: true })
+  email: string;
 }
