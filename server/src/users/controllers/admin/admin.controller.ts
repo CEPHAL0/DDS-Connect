@@ -6,22 +6,24 @@ import {
   HttpException,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
+  Put,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 
-import { CreateUserDto } from 'src/users/dtos/CreateUser.doto';
+import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import {
   UserReponse,
   UserResponseData,
   UsersResponse,
 } from '../../types/user-response';
-import { Response } from 'express';
-import { UsersService } from 'src/users/services/users/users.service';
+import { UsersService } from 'src/users/services/admin/admin.service';
 import { User } from 'src/users/entitites/user.entity';
+import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
 
-@Controller('users')
+@Controller('admin/users')
 export class UsersController {
   constructor(private userService: UsersService) {}
 
@@ -53,6 +55,15 @@ export class UsersController {
     return this.userService.remove(id);
   }
 
+  @Patch(':id')
+  @UsePipes(new ValidationPipe())
+  async updateUserById(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<UserReponse> {
+    return this.userService.updateUser(id, updateUserDto);
+  }
+
   // @Get('fetch')
   // getUsers(): Array<Object> {
   //   return this.userService.fetchUsers();
@@ -78,12 +89,6 @@ export class UsersController {
   //   ];
   // }
 
-  // @Post()
-  // @UsePipes(new ValidationPipe({}))
-  // createUser(@Body() body: CreateUserDto): UserReponse {
-  //   return this.userService.postUser(body);
-  // }
-
   // // Get by parameter in URL
   // @Get(':id')
   // getUserbyId(@Param('id', ParseIntPipe) id: string) {
@@ -97,14 +102,4 @@ export class UsersController {
   // //   console.log({id, postId})
   // //   return {id, postId}
   // // }
-
-  // // Query Parameters Example URL: http://example.com?searchResults=hello+world&output=hello
-  // @Get('params')
-  // getUserByParams(
-  //   @Query('searchResults') searchResults: string,
-  //   @Query('index') index: number,
-  // ) {
-  //   console.log({ searchResults, index });
-  //   return { searchResults, index };
-  // }
 }

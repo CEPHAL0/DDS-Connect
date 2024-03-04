@@ -1,5 +1,5 @@
-import { ApiReponse } from 'src/responses/baseresponse';
-import { CreateUserDto } from 'src/users/dtos/CreateUser.doto';
+import { ApiReponse } from 'src/responses/base-response.type';
+import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 
 export type UserResponseData = Omit<CreateUserDto, 'password'>;
 
