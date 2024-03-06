@@ -25,13 +25,12 @@ export class AuthGuard implements CanActivate {
       );
 
       request["user"] = payload;
+      return true;
     }catch (error: any){
       console.log(error.message);
       throw new UnauthorizedException();
     }
-    return true;
   }
-
 
   private extractFromHeader(request: Request): string | undefined{
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
