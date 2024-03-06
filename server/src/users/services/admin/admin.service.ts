@@ -52,11 +52,31 @@ export class UsersService {
     return userResponse;
   }
 
+  async findOneByUsername(username: any): Promise<User> {
+
+    const user: User = await this.userRepository
+      .createQueryBuilder()
+      .select('user')
+      .from(User, 'user')
+      .where('user.username = :username', { username: username })
+      .getOne();
+
+    if (user == null) {
+      throw new HttpException('User not found', 404);
+    }
+    return user;
+  }
+
   async remove(id: number): Promise<UserReponse> {
     const user = await this.userRepository.findOneBy({ id });
 
     if (!user) {
       throw new HttpException('User Doesnot Exist', 404);
+    }
+
+    if (user.username == "admin"){
+      console.log("Cannot Delete Admin Profile")
+      throw new HttpException("Forbidden Resource", 401);
     }
 
     await this.userRepository.delete({ id });
@@ -89,11 +109,13 @@ export class UsersService {
       .where('user.username = :username', { username: createUserDto.username })
       .getExists();
 
-      if (userWithUsernameExists) {
+    if (userWithUsernameExists) {
       throw new HttpException('User with Username already exists', 409);
     }
 
-    await this.userRepository.save(createUserDto).catch(()=>{throw new HttpException("Failed to Create User", 400)});
+    await this.userRepository.save(createUserDto).catch(() => {
+      throw new HttpException('Failed to Create User', 400);
+    });
 
     const userData = { ...createUserDto };
 
@@ -118,25 +140,37 @@ export class UsersService {
       .where('user.id = :id', { id: id })
       .getExists();
 
-      
     if (!userExists) {
       throw new HttpException('User not found', 404);
     }
 
-    const userWithEmailExists = await this.userRepository.createQueryBuilder().select("user").from(User, "user").where("user.email = :email ", {email: updateUserDto.email}).andWhere("user.id != :id", {id: id}).getExists();
+    const userWithEmailExists = await this.userRepository
+      .createQueryBuilder()
+      .select('user')
+      .from(User, 'user')
+      .where('user.email = :email ', { email: updateUserDto.email })
+      .andWhere('user.id != :id', { id: id })
+      .getExists();
 
-    if (userWithEmailExists){
-      throw new HttpException("User with email already exists", 409);
+    if (userWithEmailExists) {
+      throw new HttpException('User with email already exists', 409);
     }
 
-    const userWithUsernameExists = await this.userRepository.createQueryBuilder().select("user").from(User, "user").where("user.username = :username ", {username: updateUserDto.username}).andWhere("user.id != :id", {id: id}).getExists();
+    const userWithUsernameExists = await this.userRepository
+      .createQueryBuilder()
+      .select('user')
+      .from(User, 'user')
+      .where('user.username = :username ', { username: updateUserDto.username })
+      .andWhere('user.id != :id', { id: id })
+      .getExists();
 
-    if (userWithUsernameExists){
-      throw new HttpException("User with username already exists", 409);
+    if (userWithUsernameExists) {
+      throw new HttpException('User with username already exists', 409);
     }
 
-
-    await this.userRepository.update(id, updateUserDto).catch(()=>{throw new HttpException("Failed to update user", 400)});
+    await this.userRepository.update(id, updateUserDto).catch(() => {
+      throw new HttpException('Failed to update user', 400);
+    });
 
     const userResponse: UserReponse = {
       data: null,

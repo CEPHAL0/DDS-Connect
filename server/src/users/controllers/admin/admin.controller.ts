@@ -3,12 +3,11 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
   Param,
   ParseIntPipe,
   Patch,
   Post,
-  Put,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -16,13 +15,15 @@ import {
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import {
   UserReponse,
-  UserResponseData,
   UsersResponse,
 } from '../../types/user-response';
 import { UsersService } from 'src/users/services/admin/admin.service';
 import { User } from 'src/users/entitites/user.entity';
 import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
+
+@UseGuards(AuthGuard)
 @Controller('admin/users')
 export class UsersController {
   constructor(private userService: UsersService) {}
@@ -37,8 +38,14 @@ export class UsersController {
   async getUserById(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<UserReponse> {
-    const user = await this.userService.findOne(id);
+    const user = await this.userService.findOne(+id);
     return user;
+  }
+
+  // Function only to get username and password for authentication
+  @Get('/username/:username')
+  async getUserByUsername(@Param('username') username: string): Promise<User> {
+    return await this.userService.findOneByUsername(username);
   }
 
   @Post('')
@@ -63,43 +70,4 @@ export class UsersController {
   ): Promise<UserReponse> {
     return this.userService.updateUser(id, updateUserDto);
   }
-
-  // @Get('fetch')
-  // getUsers(): Array<Object> {
-  //   return this.userService.fetchUsers();
-  // }
-
-  // @Get('posts')
-  // getUsersPosts() {
-  //   return [
-  //     {
-  //       username: 'Sharad',
-  //       email: 'sharad.sharma@deerwalk.edu.np',
-  //       posts: [
-  //         {
-  //           id: 1,
-  //           title: 'Post 1',
-  //         },
-  //         {
-  //           id: 2,
-  //           title: 'Post 2',
-  //         },
-  //       ],
-  //     },
-  //   ];
-  // }
-
-  // // Get by parameter in URL
-  // @Get(':id')
-  // getUserbyId(@Param('id', ParseIntPipe) id: string) {
-  //   console.log(id);
-  //   return { id: id };
-  // }
-
-  // // Get Multiple Parameter in the same route
-  // // @Get(":id/:postId")
-  // // getUserbyIdPostbyId(@Param("id") id: number, @Param("postId") postId: number){
-  // //   console.log({id, postId})
-  // //   return {id, postId}
-  // // }
 }

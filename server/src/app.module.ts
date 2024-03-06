@@ -6,6 +6,7 @@ import { DataSource } from 'typeorm';
 import { User } from './users/entitites/user.entity';
 import { UsersController } from './users/controllers/admin/admin.controller';
 import { UsersService } from './users/services/admin/admin.service';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { UsersService } from './users/services/admin/admin.service';
       inject: [ConfigService],
     }),
     UsersModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
