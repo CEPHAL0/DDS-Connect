@@ -11,6 +11,7 @@ import { AuthService } from './auth.service';
 import { SignInDto } from './dtos/signIn.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Public } from 'src/decorators/public.decorator';
+import { RegisterUserDto } from 'src/users/dtos/register-user.dto';
 
 @Public()
 @Controller('')
@@ -22,5 +23,12 @@ export class AuthController {
   @UsePipes(new ValidationPipe())
   signIn(@Body() signInDto: SignInDto) {
     return this.authService.signIn(signInDto.username, signInDto.password);
+  }
+
+  @Public()
+  @Post('signup')
+  @UsePipes(new ValidationPipe())
+  register(@Body() registerUserDto: RegisterUserDto){
+    return this.authService.register(registerUserDto);
   }
 }

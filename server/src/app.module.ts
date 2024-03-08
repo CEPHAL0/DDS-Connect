@@ -4,8 +4,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { User } from './users/entitites/user.entity';
-import { UsersController } from './users/controllers/admin.controller';
-import { UsersService } from './users/services/admin.service';
+import { UsersController } from './users/controllers/admin-users.controller';
+import { UsersService } from './users/services/admin-users.service';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
