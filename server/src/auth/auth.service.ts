@@ -45,7 +45,6 @@ export class AuthService {
   }
 
   async register(registerUserDto: RegisterUserDto): Promise<UserReponse> {
-
     // Setting role to 'user' when new user signs up
     const userResponse: UserReponse = await this.userService.createUser({
       ...registerUserDto,

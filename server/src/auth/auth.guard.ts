@@ -57,8 +57,8 @@ export class AuthGuard implements CanActivate {
   }
 
   // New Method: Getting JWT from Cookie
-  private extractFromCookie(request: Request): string | undefined{
-    if(request.cookies && request.cookies.jwt){
+  private extractFromCookie(request: Request): string | undefined {
+    if (request.cookies && request.cookies.jwt) {
       return request.cookies.jwt;
     }
     return undefined;
