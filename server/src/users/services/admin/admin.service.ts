@@ -23,7 +23,7 @@ export class UsersService {
     // Removing password from all user data
     const usersResponse: Array<UserResponseData> = users.map((user) => {
       const userData = { ...user };
-      delete userData.password;
+      // delete userData.password;
       return userData;
     });
 
@@ -65,6 +65,8 @@ export class UsersService {
     }
     return user;
   }
+
+
 
   async remove(id: number): Promise<UserReponse> {
     const user = await this.userRepository.findOneBy({ id });
@@ -167,7 +169,7 @@ export class UsersService {
       throw new HttpException('User with username already exists', 409);
     }
 
-    await this.userRepository.update(id, updateUserDto).catch(() => {
+    await this.userRepository.update(id, updateUserDto).catch((error) => {
       throw new HttpException('Failed to update user', 400);
     });
 

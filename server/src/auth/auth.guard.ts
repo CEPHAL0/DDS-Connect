@@ -8,7 +8,6 @@ import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { Observable } from 'rxjs';
 import { IS_PUBLIC_KEY } from 'src/decorators/public.decorator';
 import { UsersService } from 'src/users/services/admin/admin.service';
 
@@ -18,7 +17,6 @@ export class AuthGuard implements CanActivate {
     private jwtService: JwtService,
     private configService: ConfigService,
     private reflector: Reflector,
-    private usersService: UsersService
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -46,9 +44,6 @@ export class AuthGuard implements CanActivate {
       });
 
       request['user'] = payload;
-      
-      const userRole = 
-      console.log('Inside Auth Guard: ', request);
 
       return true;
     } catch (error: any) {

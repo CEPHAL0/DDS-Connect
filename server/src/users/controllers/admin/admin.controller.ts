@@ -7,7 +7,6 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -17,7 +16,6 @@ import { UserReponse, UsersResponse } from '../../types/user-response';
 import { UsersService } from 'src/users/services/admin/admin.service';
 import { User } from 'src/users/entitites/user.entity';
 import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/types/role.enum';
 
