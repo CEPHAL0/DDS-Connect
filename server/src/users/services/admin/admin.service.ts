@@ -53,7 +53,6 @@ export class UsersService {
   }
 
   async findOneByUsername(username: any): Promise<User> {
-
     const user: User = await this.userRepository
       .createQueryBuilder()
       .select('user')
@@ -74,9 +73,9 @@ export class UsersService {
       throw new HttpException('User Doesnot Exist', 404);
     }
 
-    if (user.username == "admin"){
-      console.log("Cannot Delete Admin Profile")
-      throw new HttpException("Forbidden Resource", 401);
+    if (user.username == 'admin') {
+      console.log('Cannot Delete Admin Profile');
+      throw new HttpException('Forbidden Resource', 401);
     }
 
     await this.userRepository.delete({ id });

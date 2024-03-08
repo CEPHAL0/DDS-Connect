@@ -7,11 +7,14 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class AuthService {
   constructor(
-    private userService: AdminUsersService, 
+    private userService: AdminUsersService,
     private jwtService: JwtService,
-) {}
+  ) {}
 
-  async signIn(username: string, pass: string): Promise<{access_token: string}> {
+  async signIn(
+    username: string,
+    pass: string,
+  ): Promise<{ access_token: string }> {
     const user: User = await this.userService.findOneByUsername(username);
 
     if (user?.password != pass) {
