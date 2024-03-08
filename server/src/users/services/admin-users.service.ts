@@ -9,6 +9,7 @@ import {
   UsersResponse,
 } from 'src/users/types/user-response';
 import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -23,7 +24,7 @@ export class UsersService {
     // Removing password from all user data
     const usersResponse: Array<UserResponseData> = users.map((user) => {
       const userData = { ...user };
-      // delete userData.password;
+      delete userData.password;
       return userData;
     });
 
@@ -65,8 +66,6 @@ export class UsersService {
     }
     return user;
   }
-
-
 
   async remove(id: number): Promise<UserReponse> {
     const user = await this.userRepository.findOneBy({ id });
@@ -113,6 +112,8 @@ export class UsersService {
     if (userWithUsernameExists) {
       throw new HttpException('User with Username already exists', 409);
     }
+
+    createUserDto.password = await bcrypt.hash(createUserDto.password, 10);
 
     await this.userRepository.save(createUserDto).catch(() => {
       throw new HttpException('Failed to Create User', 400);
