@@ -36,4 +36,9 @@ export class AuthController {
   register(@Body() registerUserDto: RegisterUserDto) {
     return this.authService.register(registerUserDto);
   }
+
+  @Post('logout')
+  logout(@Res({passthrough: true}) response: Response){
+    return this.authService.logout(response);
+  }
 }
