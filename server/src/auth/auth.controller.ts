@@ -4,6 +4,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Res,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -12,6 +13,7 @@ import { SignInDto } from './dtos/signIn.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Public } from 'src/decorators/public.decorator';
 import { RegisterUserDto } from 'src/users/dtos/register-user.dto';
+import { Response } from 'express';
 
 @Public()
 @Controller('')
@@ -21,14 +23,17 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   @UsePipes(new ValidationPipe())
-  signIn(@Body() signInDto: SignInDto) {
-    return this.authService.signIn(signInDto.username, signInDto.password);
+  signIn(
+    @Body() signInDto: SignInDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.authService.signIn(signInDto.username, signInDto.password, res);
   }
 
   @Public()
   @Post('signup')
   @UsePipes(new ValidationPipe())
-  register(@Body() registerUserDto: RegisterUserDto){
+  register(@Body() registerUserDto: RegisterUserDto) {
     return this.authService.register(registerUserDto);
   }
 }

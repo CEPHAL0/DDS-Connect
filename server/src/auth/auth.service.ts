@@ -7,6 +7,8 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { UserReponse } from 'src/users/types/user-response';
 import { RegisterUserDto } from 'src/users/dtos/register-user.dto';
+import { Response } from 'express';
+import { ApiReponse } from 'src/responses/base-response.type';
 
 @Injectable()
 export class AuthService {
@@ -18,10 +20,11 @@ export class AuthService {
   async signIn(
     username: string,
     pass: string,
-  ): Promise<{ access_token: string }> {
+    response: Response,
+  ): Promise<ApiReponse<null>> {
     const user: User = await this.userService.findOneByUsername(username);
 
-    const isMatch = await bcrypt.compare(pass, user.password)
+    const isMatch = await bcrypt.compare(pass, user.password);
 
     if (!isMatch) {
       throw new UnauthorizedException();
@@ -29,15 +32,36 @@ export class AuthService {
 
     const payload = { sub: user.id, username: user.username };
 
-    return { access_token: await this.jwtService.signAsync(payload) };
+    const access_token = await this.jwtService.signAsync(payload);
+
+    response.cookie('jwt', access_token, { httpOnly: true });
+
+    const returnResponse: ApiReponse<null> = {
+      statusCode: 200,
+      message: 'Logged In Successfully',
+      data: null,
+    };
+    return returnResponse;
   }
 
-  async register(registerUserDto: RegisterUserDto): Promise<UserReponse>{
+  async register(registerUserDto: RegisterUserDto): Promise<UserReponse> {
+    const userResponse: UserReponse = await this.userService.createUser({
+      ...registerUserDto,
+      role: 'user',
+    });
 
-      const userResponse: UserReponse = await this.userService.createUser({...registerUserDto, role:"user"});
+    delete userResponse.data.role;
 
-      delete userResponse.data.role;
+    return userResponse;
+  }
 
-      return userResponse;
+  async logout(response: Response): Promise<ApiReponse<null>> {
+    response.clearCookie('jwt');
+    const result: ApiReponse<null> = {
+      data: null,
+      message: 'Logged out successfully',
+      statusCode: 200,
+    };
+    return result;
   }
 }

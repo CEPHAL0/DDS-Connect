@@ -20,7 +20,6 @@ export class RegisterUserDto {
   @IsNotEmpty({
     message: 'Role Must be one of the following: admin, member, user',
   })
-
   @IsNotEmpty({ message: 'Password cannot be empty' })
   @MinLength(8, { message: 'Password must be atleast 8 characters long' })
   password: string;

@@ -67,8 +67,6 @@ export class UsersService {
     return user;
   }
 
-
-
   async remove(id: number): Promise<UserReponse> {
     const user = await this.userRepository.findOneBy({ id });
 

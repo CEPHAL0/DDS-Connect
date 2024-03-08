@@ -30,15 +30,13 @@ export class AuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    const token = this.extractFromHeader(request);
-
-    if (isPublic) {
-    }
-
-    if (!token) {
-      throw new UnauthorizedException();
-    }
     try {
+      const token = this.extractFromCookie(request);
+
+      if (!token) {
+        throw new UnauthorizedException();
+      }
+
       const payload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('JWT_SECRET'),
       });
@@ -46,14 +44,23 @@ export class AuthGuard implements CanActivate {
       request['user'] = payload;
 
       return true;
-    } catch (error: any) {
-      console.log(error.message);
+    } catch (e) {
+      console.log(e.message);
       throw new UnauthorizedException();
     }
   }
 
+  // Old Method: Getting JWT from Header
   private extractFromHeader(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
+  }
+
+  // New Method: Getting JWT from Cookie
+  private extractFromCookie(request: Request): string | undefined{
+    if(request.cookies && request.cookies.jwt){
+      return request.cookies.jwt;
+    }
+    return undefined;
   }
 }
