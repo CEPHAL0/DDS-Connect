@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { UsersController as AdminUsersController } from './controllers/admin/admin.controller';
-import { UsersService as AdminUsersService } from './services/admin/admin.service';
+import { UsersController as AdminUsersController } from './controllers/admin.controller';
+import { UsersService as AdminUsersService } from './services/admin.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entitites/user.entity';
 import { AuthService } from 'src/auth/auth.service';

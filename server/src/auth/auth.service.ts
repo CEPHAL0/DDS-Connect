@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/entitites/user.entity';
-import { UsersService as AdminUsersService } from 'src/users/services/admin/admin.service';
+import { UsersService as AdminUsersService } from 'src/users/services/admin.service';
 import { Repository } from 'typeorm';
 
 @Injectable()

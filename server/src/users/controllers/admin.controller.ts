@@ -12,8 +12,8 @@ import {
 } from '@nestjs/common';
 
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
-import { UserReponse, UsersResponse } from '../../types/user-response';
-import { UsersService } from 'src/users/services/admin/admin.service';
+import { UserReponse, UsersResponse } from '../types/user-response';
+import { UsersService } from 'src/users/services/admin.service';
 import { User } from 'src/users/entitites/user.entity';
 import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
 import { Roles } from 'src/decorators/roles.decorator';
