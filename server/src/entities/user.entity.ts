@@ -1,5 +1,4 @@
 import { IsEmail, IsNotEmpty } from 'class-validator';
-import { Form } from 'src/forms/entities/form.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 @Entity()
@@ -21,7 +20,4 @@ export class User {
 
   @Column({ unique: true })
   email: string;
-
-  @OneToMany(() => Form, (form) => form.user)
-  forms: Form[];
 }

@@ -1,14 +1,14 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from 'src/users/dtos/create-user.dto';
-import { User } from 'src/users/entitites/user.entity';
+import { CreateUserDto } from 'src/dtos/create-user.dto';
+import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import {
   UserResponseData,
   UserReponse,
   UsersResponse,
-} from 'src/users/types/user-response';
-import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
+} from 'src/types/reponse-types/user-response';
+import { UpdateUserDto } from 'src/dtos/update-user.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()

@@ -1,14 +1,13 @@
 import { Module } from '@nestjs/common';
-import { UsersModule } from './users/users.module';
+import { UsersModule } from './modules/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { User } from './users/entitites/user.entity';
-import { UsersController } from './users/controllers/admin-users.controller';
-import { UsersService } from './users/services/admin-users.service';
-import { AuthModule } from './auth/auth.module';
+import { User } from './entities/user.entity';
+import { UsersController } from './controllers/admin-users.controller';
+import { UsersService } from './providers/admin-users.service';
+import { AuthModule } from './modules/auth.module';
 import { FormsModule } from './forms/forms.module';
-import { Form } from './forms/entities/form.entity';
 
 @Module({
   imports: [
@@ -21,7 +20,7 @@ import { Form } from './forms/entities/form.entity';
         username: configService.get('DATABASE_USER'),
         password: configService.get('DATABASE_PASSWORD'),
         database: configService.get('DATABASE_NAME'),
-        entities: [User, Form],
+        entities: [User],
 
         // Set to false for production
         synchronize: true,

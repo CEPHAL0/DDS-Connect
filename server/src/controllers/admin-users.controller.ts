@@ -11,11 +11,14 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 
-import { CreateUserDto } from 'src/users/dtos/create-user.dto';
-import { UserReponse, UsersResponse } from '../types/user-response';
-import { UsersService } from 'src/users/services/admin-users.service';
-import { User } from 'src/users/entitites/user.entity';
-import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
+import { CreateUserDto } from 'src/dtos/create-user.dto';
+import {
+  UserReponse,
+  UsersResponse,
+} from '../types/reponse-types/user-response';
+import { UsersService } from 'src/providers/admin-users.service';
+import { User } from 'src/entities/user.entity';
+import { UpdateUserDto } from 'src/dtos/update-user.dto';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/types/role.enum';
 
