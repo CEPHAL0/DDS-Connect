@@ -1,14 +1,14 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from 'src/users/dtos/create-user.dto';
-import { User } from 'src/users/entitites/user.entity';
+import { CreateUserDto } from 'src/dtos/create-user.dto';
+import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import {
   UserResponseData,
   UserReponse,
   UsersResponse,
-} from 'src/users/types/user-response';
-import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
+} from 'src/types/reponse-types/user-response';
+import { UpdateUserDto } from 'src/dtos/update-user.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -21,14 +21,12 @@ export class UsersService {
   async findAll(): Promise<UsersResponse> {
     const users = await this.userRepository.find();
 
-    // Removing password from all user data
     const usersResponse: Array<UserResponseData> = users.map((user) => {
       const userData = { ...user };
       delete userData.password;
       return userData;
     });
 
-    // Returning the response as array of objects in data field of users response
     const response: UsersResponse = {
       data: usersResponse,
       message: 'Users fetched successfully',
@@ -89,7 +87,6 @@ export class UsersService {
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<UserReponse> {
-    // Check if the user with email exists
     const userWithEmailExists: boolean = await this.userRepository
       .createQueryBuilder()
       .select('user')
@@ -101,7 +98,6 @@ export class UsersService {
       throw new HttpException('User with Email already exists', 409);
     }
 
-    // Check if the user with username exists
     const userWithUsernameExists: boolean = await this.userRepository
       .createQueryBuilder()
       .select('user')

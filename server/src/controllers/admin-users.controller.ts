@@ -11,11 +11,14 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 
-import { CreateUserDto } from 'src/users/dtos/create-user.dto';
-import { UserReponse, UsersResponse } from '../types/user-response';
-import { UsersService } from 'src/users/services/admin-users.service';
-import { User } from 'src/users/entitites/user.entity';
-import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
+import { CreateUserDto } from 'src/dtos/create-user.dto';
+import {
+  UserReponse,
+  UsersResponse,
+} from '../types/reponse-types/user-response';
+import { UsersService } from 'src/services/admin-users.service';
+import { User } from 'src/entities/user.entity';
+import { UpdateUserDto } from 'src/dtos/update-user.dto';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/types/role.enum';
 
@@ -38,27 +41,27 @@ export class UsersController {
     return user;
   }
 
-  // Function only to get username and password for authentication
+  // Used for authentication
   @Get('/username/:username')
   async getUserByUsername(@Param('username') username: string): Promise<User> {
     return await this.userService.findOneByUsername(username);
   }
 
-  @Post('')
+  @Post('/create')
   @UsePipes(new ValidationPipe())
   async createUser(@Body() user: CreateUserDto): Promise<UserReponse> {
     const userResponse: UserReponse = await this.userService.createUser(user);
     return userResponse;
   }
 
-  @Delete(':id')
+  @Delete('/delete/:id')
   async removeUserById(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<UserReponse> {
     return this.userService.remove(id);
   }
 
-  @Patch(':id')
+  @Patch('/update/:id')
   @UsePipes(new ValidationPipe())
   async updateUserById(
     @Param('id', ParseIntPipe) id: number,

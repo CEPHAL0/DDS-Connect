@@ -9,7 +9,7 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { IS_PUBLIC_KEY } from 'src/decorators/public.decorator';
-import { UsersService } from 'src/users/services/admin-users.service';
+import { UsersService } from 'src/services/admin-users.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -57,8 +57,8 @@ export class AuthGuard implements CanActivate {
   }
 
   // New Method: Getting JWT from Cookie
-  private extractFromCookie(request: Request): string | undefined{
-    if(request.cookies && request.cookies.jwt){
+  private extractFromCookie(request: Request): string | undefined {
+    if (request.cookies && request.cookies.jwt) {
       return request.cookies.jwt;
     }
     return undefined;

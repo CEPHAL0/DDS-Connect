@@ -8,11 +8,11 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { SignInDto } from './dtos/signIn.dto';
+import { AuthService } from '../services/auth.service';
+import { SignInDto } from '../dtos/signIn.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Public } from 'src/decorators/public.decorator';
-import { RegisterUserDto } from 'src/users/dtos/register-user.dto';
+import { RegisterUserDto } from 'src/dtos/register-user.dto';
 import { Response } from 'express';
 
 @Public()
@@ -38,7 +38,7 @@ export class AuthController {
   }
 
   @Post('logout')
-  logout(@Res({passthrough: true}) response: Response){
+  logout(@Res({ passthrough: true }) response: Response) {
     return this.authService.logout(response);
   }
 }
