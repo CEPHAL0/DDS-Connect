@@ -21,14 +21,12 @@ export class UsersService {
   async findAll(): Promise<UsersResponse> {
     const users = await this.userRepository.find();
 
-    // Removing password from all user data
     const usersResponse: Array<UserResponseData> = users.map((user) => {
       const userData = { ...user };
       delete userData.password;
       return userData;
     });
 
-    // Returning the response as array of objects in data field of users response
     const response: UsersResponse = {
       data: usersResponse,
       message: 'Users fetched successfully',
@@ -89,7 +87,7 @@ export class UsersService {
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<UserReponse> {
-    // Check if the user with email exists
+
     const userWithEmailExists: boolean = await this.userRepository
       .createQueryBuilder()
       .select('user')
@@ -101,7 +99,6 @@ export class UsersService {
       throw new HttpException('User with Email already exists', 409);
     }
 
-    // Check if the user with username exists
     const userWithUsernameExists: boolean = await this.userRepository
       .createQueryBuilder()
       .select('user')

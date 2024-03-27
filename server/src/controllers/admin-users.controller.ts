@@ -16,7 +16,7 @@ import {
   UserReponse,
   UsersResponse,
 } from '../types/reponse-types/user-response';
-import { UsersService } from 'src/providers/admin-users.service';
+import { UsersService } from 'src/services/admin-users.service';
 import { User } from 'src/entities/user.entity';
 import { UpdateUserDto } from 'src/dtos/update-user.dto';
 import { Roles } from 'src/decorators/roles.decorator';
@@ -41,7 +41,7 @@ export class UsersController {
     return user;
   }
 
-  // Function only to get username and password for authentication
+  // Used for authentication
   @Get('/username/:username')
   async getUserByUsername(@Param('username') username: string): Promise<User> {
     return await this.userService.findOneByUsername(username);

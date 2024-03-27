@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { User } from './entities/user.entity';
 import { UsersController } from './controllers/admin-users.controller';
-import { UsersService } from './providers/admin-users.service';
+import { UsersService } from './services/admin-users.service';
 import { AuthModule } from './modules/auth.module';
-import { FormsModule } from './forms/forms.module';
+import { FormsModule } from './modules/forms.module';
+import { Form } from './entities/form.entity';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { FormsModule } from './forms/forms.module';
         username: configService.get('DATABASE_USER'),
         password: configService.get('DATABASE_PASSWORD'),
         database: configService.get('DATABASE_NAME'),
-        entities: [User],
+        entities: [User, Form],
 
         // Set to false for production
         synchronize: true,

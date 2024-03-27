@@ -8,7 +8,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { AuthService } from '../providers/auth.service';
+import { AuthService } from '../services/auth.service';
 import { SignInDto } from '../dtos/signIn.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Public } from 'src/decorators/public.decorator';
