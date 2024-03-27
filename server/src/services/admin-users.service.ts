@@ -87,7 +87,6 @@ export class UsersService {
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<UserReponse> {
-
     const userWithEmailExists: boolean = await this.userRepository
       .createQueryBuilder()
       .select('user')

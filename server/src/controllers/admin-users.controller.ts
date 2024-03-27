@@ -47,21 +47,21 @@ export class UsersController {
     return await this.userService.findOneByUsername(username);
   }
 
-  @Post('')
+  @Post('/create')
   @UsePipes(new ValidationPipe())
   async createUser(@Body() user: CreateUserDto): Promise<UserReponse> {
     const userResponse: UserReponse = await this.userService.createUser(user);
     return userResponse;
   }
 
-  @Delete(':id')
+  @Delete('/delete/:id')
   async removeUserById(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<UserReponse> {
     return this.userService.remove(id);
   }
 
-  @Patch(':id')
+  @Patch('/update/:id')
   @UsePipes(new ValidationPipe())
   async updateUserById(
     @Param('id', ParseIntPipe) id: number,

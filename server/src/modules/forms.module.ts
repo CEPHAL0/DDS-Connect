@@ -10,11 +10,7 @@ import { UsersModule } from './users.module';
 import { AuthModule } from './auth.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Form]),
-    UsersModule,
-    AuthModule
-  ],
+  imports: [TypeOrmModule.forFeature([Form]), UsersModule, AuthModule],
   controllers: [FormsController],
   providers: [FormService],
 })

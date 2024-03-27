@@ -1,4 +1,9 @@
-import { HttpException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  UnauthorizedException,
+  Logger,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/entities/user.entity';
 import { UsersService as AdminUsersService } from 'src/services/admin-users.service';
@@ -16,7 +21,7 @@ export class AuthService {
   constructor(
     private userService: AdminUsersService,
     private jwtService: JwtService,
-    private configService: ConfigService
+    private configService: ConfigService,
   ) {}
 
   async signIn(
@@ -67,9 +72,6 @@ export class AuthService {
     };
     return result;
   }
-
-
-
 
   async getUserFromCookie(request: Request): Promise<User> {
     try {
