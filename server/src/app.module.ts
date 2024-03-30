@@ -9,6 +9,7 @@ import { UsersService } from './services/admin-users.service';
 import { AuthModule } from './modules/auth.module';
 import { FormsModule } from './modules/forms.module';
 import { Form } from './entities/form.entity';
+import { Question } from './entities/question.entity';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { Form } from './entities/form.entity';
         username: configService.get('DATABASE_USER'),
         password: configService.get('DATABASE_PASSWORD'),
         database: configService.get('DATABASE_NAME'),
-        entities: [User, Form],
+        entities: [User, Form, Question],
 
         // Set to false for production
         synchronize: true,
