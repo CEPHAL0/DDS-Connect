@@ -21,6 +21,7 @@ import { User } from 'src/entities/user.entity';
 import { UpdateUserDto } from 'src/dtos/update-user.dto';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/types/role.enum';
+import { Public } from 'src/decorators/public.decorator';
 
 @Roles(Role.Admin)
 @Controller('admin/users')
