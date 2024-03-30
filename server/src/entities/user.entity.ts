@@ -22,6 +22,9 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @OneToMany(() => Form, (form) => form.created_by)
+  @OneToMany(() => Form, (form) => form.created_by, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   forms: Form[];
 }

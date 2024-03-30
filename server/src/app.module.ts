@@ -9,25 +9,19 @@ import { UsersService } from './services/admin-users.service';
 import { AuthModule } from './modules/auth.module';
 import { FormsModule } from './modules/forms.module';
 import { Form } from './entities/form.entity';
+import { DatabaseConfig } from './config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      cache: true,
+      load: [DatabaseConfig],
+    }),
     TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get('DATABASE_HOST'),
-        port: +configService.get('DATABASE_PORT'),
-        username: configService.get('DATABASE_USER'),
-        password: configService.get('DATABASE_PASSWORD'),
-        database: configService.get('DATABASE_NAME'),
-        entities: [User, Form],
-
-        // Set to false for production
-        synchronize: true,
-        retryDelay: 4,
-
-        // autoLoadEntities: true,
+        ...configService.get('database'),
       }),
       inject: [ConfigService],
     }),

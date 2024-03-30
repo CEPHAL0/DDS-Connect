@@ -30,6 +30,6 @@ export class Form {
   @Column({ enum: ['Open', 'Closed'] })
   status: string;
 
-  @ManyToOne(() => User, (user) => user.forms)
+  @ManyToOne(() => User, (user) => user.forms, { cascade: true })
   created_by: User;
 }

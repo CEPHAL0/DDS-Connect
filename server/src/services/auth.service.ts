@@ -34,7 +34,7 @@ export class AuthService {
     const isMatch = await bcrypt.compare(pass, user.password);
 
     if (!isMatch) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Wrong Credentials');
     }
 
     const payload = { id: user.id, username: user.username };
