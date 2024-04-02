@@ -13,5 +13,6 @@ import { AuthModule } from './auth.module';
   imports: [TypeOrmModule.forFeature([Form]), UsersModule, AuthModule],
   controllers: [FormsController],
   providers: [FormService],
+  exports: [FormService],
 })
 export class FormsModule {}

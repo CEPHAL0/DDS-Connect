@@ -3,13 +3,11 @@ import { UsersModule } from './modules/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { User } from './entities/user.entity';
-import { UsersController } from './controllers/admin-users.controller';
-import { UsersService } from './services/admin-users.service';
 import { AuthModule } from './modules/auth.module';
 import { FormsModule } from './modules/forms.module';
-import { Form } from './entities/form.entity';
 import { DatabaseConfig } from './config';
+import { QuestionsModule } from './modules/questions.module';
+import { ValueModule } from './modules/values.module';
 
 @Module({
   imports: [
@@ -28,6 +26,8 @@ import { DatabaseConfig } from './config';
     UsersModule,
     AuthModule,
     FormsModule,
+    QuestionsModule,
+    ValueModule,
   ],
   controllers: [],
   providers: [],
