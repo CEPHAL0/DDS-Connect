@@ -15,10 +15,9 @@ import {
   FormsReponse,
 } from 'src/types/reponse-types/form-reponse';
 import { Repository } from 'typeorm';
-import { UsersService } from './admin-users.service';
+
 import { Request } from 'express';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
+
 import { UpdateFormDto } from 'src/dtos/update-form.dto';
 import { AuthService } from './auth.service';
 import { Role } from 'src/types/role.enum';
@@ -34,7 +33,7 @@ export class FormService {
 
   async findAll(): Promise<FormsReponse> {
     const forms: Form[] = await this.formRepository.find({
-      relations: { questions: true, created_by: true },
+      relations: ['questions', 'questions.values', 'created_by'],
     });
 
     forms.forEach((form) => {
@@ -54,7 +53,6 @@ export class FormService {
     request: Request,
     createFormDto: CreateFormDto,
   ): Promise<FormReponse> {
-    const currentDate = Date.now();
     const status = FormStatus.open;
 
     const user: User = await this.authService.getUserFromCookie(request);
@@ -76,7 +74,10 @@ export class FormService {
   }
 
   async findOneById(id: number): Promise<FormReponse> {
-    const form = await this.formRepository.findOneBy({ id });
+    const form = await this.formRepository.findOne({
+      where: { id: id },
+      relations: ['questions', 'questions.values', 'created_by'],
+    });
 
     if (form == null) {
       throw new HttpException('Form Not Found', 404);
@@ -134,10 +135,11 @@ export class FormService {
     const user: User = await this.authService.getUserFromCookie(request);
 
     if (user.role == Role.Admin) {
+      
       const formExists = await this.formRepository
         .findOneByOrFail({ id })
         .catch((error) => {
-          throw new NotFoundException('Form Not Found');
+          throw new HttpException('Form Not Found', 404);
         });
 
       await this.formRepository.delete({ id });

@@ -1,6 +1,6 @@
 import { Value } from 'src/entities/values.entity';
-import { ApiReponse } from './base-response.type';
+import { ApiResponse } from './base-response.type';
 
-export type ValueResponse = ApiReponse<Value>;
+export type ValueResponse = ApiResponse<Value>;
 
-export type ValuesResponse = ApiReponse<Value[]>;
+export type ValuesResponse = ApiResponse<Value[]>;
