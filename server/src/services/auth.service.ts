@@ -15,6 +15,7 @@ import { RegisterUserDto } from 'src/dtos/register-user.dto';
 import { Request, Response } from 'express';
 import { ApiResponse } from 'src/types/reponse-types/base-response.type';
 import { ConfigService } from '@nestjs/config';
+import { Role } from 'src/types/role.enum';
 
 @Injectable()
 export class AuthService {
@@ -41,7 +42,7 @@ export class AuthService {
 
     const access_token = await this.jwtService.signAsync(payload);
 
-    response.cookie('jwt', access_token, { httpOnly: true });
+    response.cookie('jwt', access_token, { httpOnly: false });
 
     const returnResponse: ApiResponse<null> = {
       statusCode: 200,
@@ -55,7 +56,7 @@ export class AuthService {
     // Setting role to 'user' when new user signs up
     const userResponse: UserReponse = await this.userService.createUser({
       ...registerUserDto,
-      role: 'user',
+      role: Role.User,
     });
 
     delete userResponse.data.role;

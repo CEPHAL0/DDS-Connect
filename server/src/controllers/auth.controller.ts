@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -20,6 +21,7 @@ import { Response } from 'express';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Public()
   @HttpCode(HttpStatus.OK)
   @Post('login')
   @UsePipes(new ValidationPipe())
@@ -31,7 +33,7 @@ export class AuthController {
   }
 
   @Public()
-  @Post('signup')
+  @Post('register')
   @UsePipes(new ValidationPipe())
   register(@Body() registerUserDto: RegisterUserDto) {
     return this.authService.register(registerUserDto);
@@ -40,5 +42,11 @@ export class AuthController {
   @Post('logout')
   logout(@Res({ passthrough: true }) response: Response) {
     return this.authService.logout(response);
+  }
+
+  @Public()
+  @Get('/hello')
+  hello() {
+    return { message: 'hello world' };
   }
 }
