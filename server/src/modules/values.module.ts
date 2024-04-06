@@ -5,6 +5,7 @@ import { FormsModule } from './forms.module';
 import { QuestionService } from 'src/services/question.service';
 import { ValueService } from 'src/services/values.service';
 import { QuestionsModule } from './questions.module';
+import { ValuesController } from 'src/controllers/values.controller';
 
 @Module({
   imports: [
@@ -13,5 +14,6 @@ import { QuestionsModule } from './questions.module';
   ],
   providers: [ValueService],
   exports: [ValueService],
+  controllers: [ValuesController],
 })
 export class ValueModule {}

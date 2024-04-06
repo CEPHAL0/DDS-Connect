@@ -1,17 +1,18 @@
-import { HttpException, Inject, Injectable, forwardRef } from '@nestjs/common';
+import {
+  HttpException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Value } from 'src/entities/values.entity';
-import { FormReponse } from 'src/types/reponse-types/form-reponse';
 import { DataSource, Repository } from 'typeorm';
-import { FormService } from './forms.service';
-import { Form } from 'src/entities/form.entity';
 import { QuestionService } from './question.service';
-import {
-  ValueResponse,
-  ValuesResponse,
-} from 'src/types/reponse-types/value-response.type';
-import { Question } from 'src/entities/question.entity';
+import { ValuesResponse } from 'src/types/reponse-types/value-response.type';
 import { QuestionResponse } from 'src/types/reponse-types/question-response.type';
+import { ApiResponse } from 'src/types/reponse-types/base-response.type';
+import { Question } from 'src/entities/question.entity';
 
 @Injectable()
 export class ValueService {
@@ -67,5 +68,72 @@ export class ValueService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async createOneValueForAQuestion(
+    questionId: number,
+    name: string,
+  ): Promise<ApiResponse<null>> {
+    const questionResponse: QuestionResponse =
+      await this.questionService.findOneById(questionId);
+
+    const question: Question = questionResponse.data;
+
+    await this.valueRepository
+      .save({ name: name, question: question })
+      .catch((error) => {
+        throw new HttpException('Failed to save value', 400);
+      });
+
+    const valueResponse: ApiResponse<null> = {
+      data: null,
+      message: 'Added value to question successfully',
+      statusCode: 200,
+    };
+
+    return valueResponse;
+  }
+
+  async updateOneValue(
+    valueId: number,
+    name: string,
+  ): Promise<ApiResponse<null>> {
+    const value: Value = await this.valueRepository
+      .findOneOrFail({
+        where: { id: valueId },
+      })
+      .catch((error) => {
+        throw new NotFoundException('Value not found');
+      });
+
+    await this.valueRepository.update(value.id, { name: name });
+
+    const valueResponse: ApiResponse<null> = {
+      data: null,
+      message: 'Updated value successfully',
+      statusCode: 200,
+    };
+
+    return valueResponse;
+  }
+
+  async deleteOneValue(valueId: number): Promise<ApiResponse<null>> {
+    const value = await this.valueRepository
+      .findOneOrFail({
+        where: { id: valueId },
+      })
+      .catch((error) => {
+        throw new HttpException('Value not found', 404);
+      });
+
+    await this.valueRepository.delete(value.id);
+
+    const valueResponse: ApiResponse<null> = {
+      data: null,
+      message: 'Deleted value successfully',
+      statusCode: 200,
+    };
+
+    return valueResponse;
   }
 }

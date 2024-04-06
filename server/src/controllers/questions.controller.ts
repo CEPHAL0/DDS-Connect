@@ -64,7 +64,7 @@ export class QuestionsController {
     return response;
   }
 
-  @Post('/form/:id')
+  @Post('/create/form/:id')
   async createMultipleQuestionsForAForm(
     @Param('id', ParseIntPipe) formId: number,
     @Body() createQuestionsDto: CreateQuestionDto[],
@@ -100,6 +100,17 @@ export class QuestionsController {
   ) {
     const response: QuestionResponse =
       await this.questionService.deleteOneQuestionFromForm(request, questionId);
+
+    return response;
+  }
+
+  @Delete('delete/form/:id')
+  async deleteAllQuestionsForForm(
+    @Param('id', ParseIntPipe) formId: number,
+    @Req() request: Request,
+  ) {
+    const response: ApiResponse<null> =
+      await this.questionService.deleteAllQuestionsFromForm(request, formId);
 
     return response;
   }

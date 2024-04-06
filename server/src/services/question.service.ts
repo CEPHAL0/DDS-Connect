@@ -9,7 +9,7 @@ import {
 import { FormService } from './forms.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Question } from 'src/entities/question.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, QueryRunner, Repository } from 'typeorm';
 import { CreateQuestionDto } from 'src/dtos/create-question.dto';
 import { Request } from 'express';
 import { AuthService } from './auth.service';
@@ -91,6 +91,8 @@ export class QuestionService {
         message: 'Saved Question Successfully',
         statusCode: 200,
       };
+
+      await queryRunner.commitTransaction();
 
       return questionResponse;
     } catch (error) {
@@ -234,8 +236,6 @@ export class QuestionService {
     return questionResponse;
   }
 
-  async updateMultipleQuestionsForForm() {}
-
   async deleteOneQuestionFromForm(request: Request, questionId: number) {
     const question = await this.questionRepository.findOne({
       where: { id: questionId },
@@ -260,5 +260,49 @@ export class QuestionService {
     return questionResponse;
   }
 
-  async deleteAllQuestionsFromForm() {}
+  async deleteAllQuestionsFromForm(
+    request: Request,
+    formId: number,
+  ): Promise<ApiResponse<null>> {
+    const formResponse: FormReponse =
+      await this.formService.findOneById(formId);
+
+    const form: Form = formResponse.data;
+
+    const formBelongsToUser: boolean =
+      await this.formService.getFormBelongsToUser(request, form.id);
+
+    if (!formBelongsToUser) {
+      throw new UnauthorizedException('Form doesnot belong to the user');
+    }
+
+    const questions: Question[] = form.questions;
+
+    const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+
+    await queryRunner.startTransaction();
+
+    try {
+      for (const question of questions) {
+        await this.questionRepository.delete(question.id);
+      }
+
+      await queryRunner.commitTransaction();
+
+      const response: ApiResponse<null> = {
+        data: null,
+        message: 'Deleted questions for form successfully',
+        statusCode: 200,
+      };
+
+      return response;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new HttpException('Failed to delete questions', 400);
+    } finally {
+      await queryRunner.release();
+    }
+  }
 }
