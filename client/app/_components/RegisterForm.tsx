@@ -10,8 +10,15 @@ export default function RegisterForm() {
   const router = useRouter();
 
   const handleSubmit = async (
-    values: { username: string; password: string },
-    { setSubmitting }: FormikHelpers<{ username: string; password: string }>
+    values: { name: string; username: string; email: string; password: string },
+    {
+      setSubmitting,
+    }: FormikHelpers<{
+      name: string;
+      username: string;
+      email: string;
+      password: string;
+    }>
   ) => {
     try {
       const response = await register(values);
@@ -30,7 +37,7 @@ export default function RegisterForm() {
 
   return (
     <Formik
-      initialValues={{ username: "", password: "" }}
+      initialValues={{ name: "", username: "", email: "", password: "" }}
       onSubmit={handleSubmit}
     >
       <Form className="flex flex-col gap-8 text-lg font-outfit items-center">
@@ -43,7 +50,6 @@ export default function RegisterForm() {
               name="name"
               placeholder="John Doe"
               className=" bg-gray-100 px-2 py-2 rounded-md text-base font-light"
-              
             />
           </div>
           <div className="flex flex-col items-start gap-2">
