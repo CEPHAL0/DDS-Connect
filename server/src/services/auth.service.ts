@@ -13,7 +13,7 @@ import { CreateUserDto } from 'src/dtos/create-user.dto';
 import { UserReponse } from 'src/types/reponse-types/user-response';
 import { RegisterUserDto } from 'src/dtos/register-user.dto';
 import { Request, Response } from 'express';
-import { ApiReponse } from 'src/types/reponse-types/base-response.type';
+import { ApiResponse } from 'src/types/reponse-types/base-response.type';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -28,7 +28,7 @@ export class AuthService {
     username: string,
     pass: string,
     response: Response,
-  ): Promise<ApiReponse<null>> {
+  ): Promise<ApiResponse<null>> {
     const user: User = await this.userService.findOneByUsername(username);
 
     const isMatch = await bcrypt.compare(pass, user.password);
@@ -43,7 +43,7 @@ export class AuthService {
 
     response.cookie('jwt', access_token, { httpOnly: true });
 
-    const returnResponse: ApiReponse<null> = {
+    const returnResponse: ApiResponse<null> = {
       statusCode: 200,
       message: 'Logged In Successfully',
       data: null,
@@ -63,9 +63,9 @@ export class AuthService {
     return userResponse;
   }
 
-  async logout(response: Response): Promise<ApiReponse<null>> {
+  async logout(response: Response): Promise<ApiResponse<null>> {
     response.clearCookie('jwt');
-    const result: ApiReponse<null> = {
+    const result: ApiResponse<null> = {
       data: null,
       message: 'Logged out successfully',
       statusCode: 200,

@@ -35,6 +35,7 @@ export class UsersService {
     return response;
   }
 
+  //#region Find One
   async findOne(id: number): Promise<UserReponse> {
     const user = await this.userRepository.findOneBy({ id });
 
@@ -51,6 +52,7 @@ export class UsersService {
     return userResponse;
   }
 
+  //#region Find One By Username
   async findOneByUsername(username: any): Promise<User> {
     const user: User = await this.userRepository
       .createQueryBuilder()
@@ -65,6 +67,7 @@ export class UsersService {
     return user;
   }
 
+  //#region Delete One
   async remove(id: number): Promise<UserReponse> {
     const user = await this.userRepository.findOneBy({ id });
 

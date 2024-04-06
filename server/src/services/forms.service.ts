@@ -2,6 +2,7 @@ import {
   HttpException,
   Inject,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,10 +15,9 @@ import {
   FormsReponse,
 } from 'src/types/reponse-types/form-reponse';
 import { Repository } from 'typeorm';
-import { UsersService } from './admin-users.service';
+
 import { Request } from 'express';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
+
 import { UpdateFormDto } from 'src/dtos/update-form.dto';
 import { AuthService } from './auth.service';
 import { Role } from 'src/types/role.enum';
@@ -32,7 +32,13 @@ export class FormService {
   ) {}
 
   async findAll(): Promise<FormsReponse> {
-    const forms = await this.formRepository.find();
+    const forms: Form[] = await this.formRepository.find({
+      relations: ['questions', 'questions.values', 'created_by'],
+    });
+
+    forms.forEach((form) => {
+      delete form.created_by.password;
+    });
 
     const response: FormsReponse = {
       data: forms,
@@ -47,7 +53,6 @@ export class FormService {
     request: Request,
     createFormDto: CreateFormDto,
   ): Promise<FormReponse> {
-    const currentDate = Date.now();
     const status = FormStatus.open;
 
     const user: User = await this.authService.getUserFromCookie(request);
@@ -69,7 +74,10 @@ export class FormService {
   }
 
   async findOneById(id: number): Promise<FormReponse> {
-    const form = await this.formRepository.findOneBy({ id });
+    const form = await this.formRepository.findOne({
+      where: { id: id },
+      relations: ['questions', 'questions.values', 'created_by'],
+    });
 
     if (form == null) {
       throw new HttpException('Form Not Found', 404);
@@ -84,26 +92,35 @@ export class FormService {
     return formResponse;
   }
 
+  async getFormBelongsToUser(request: Request, formId: number) {
+    const user: User = await this.authService.getUserFromCookie(request);
+
+    const formBelongsToUser = await this.formRepository
+      .createQueryBuilder('form')
+      .select(['form', 'user'])
+      .innerJoinAndSelect('form.created_by', 'user')
+      .where('user.id = :userId', { userId: user.id })
+      .andWhere('form.id = :formId', { formId: formId })
+      .getExists();
+
+    return formBelongsToUser;
+  }
+
   async updateOne(
     request: Request,
     id: number,
     updateFormDto: UpdateFormDto,
   ): Promise<any> {
-    const user: User = await this.authService.getUserFromCookie(request);
+    const formBelongsToUser: boolean = await this.getFormBelongsToUser(
+      request,
+      id,
+    );
 
-    const form: Form = await this.formRepository
-      .createQueryBuilder('form')
-      .select(['form', 'user'])
-      .innerJoinAndSelect('form.created_by', 'user')
-      .where('user.id = :userId', { userId: user.id })
-      .andWhere('form.id = :formId', { formId: id })
-      .getOne();
-
-    if (form == null) {
+    if (!formBelongsToUser) {
       throw new HttpException('Form not found', 404);
     }
 
-    await this.formRepository.update(form.id, updateFormDto);
+    await this.formRepository.update(id, updateFormDto);
 
     const formResponse: FormReponse = {
       data: null,
@@ -118,6 +135,13 @@ export class FormService {
     const user: User = await this.authService.getUserFromCookie(request);
 
     if (user.role == Role.Admin) {
+      
+      const formExists = await this.formRepository
+        .findOneByOrFail({ id })
+        .catch((error) => {
+          throw new HttpException('Form Not Found', 404);
+        });
+
       await this.formRepository.delete({ id });
 
       const formResponse: FormReponse = {
@@ -129,16 +153,13 @@ export class FormService {
       return formResponse;
     }
 
-    const form: Form = await this.formRepository
-      .createQueryBuilder('form')
-      .select(['form', 'user'])
-      .innerJoinAndSelect('form.created_by', 'user')
-      .where('user.id = :userId', { userId: user.id })
-      .andWhere('form.id = :formId', { formId: id })
-      .getOne();
+    const formBelongsToUser: boolean = await this.getFormBelongsToUser(
+      request,
+      id,
+    );
 
-    if (form == null) {
-      throw new UnauthorizedException('Form not found');
+    if (!formBelongsToUser) {
+      throw new HttpException('Form not found', 404);
     }
 
     await this.formRepository.delete({ id });
@@ -160,12 +181,18 @@ export class FormService {
 
     const formResponse: FormReponse = {
       data: null,
-      message: 'Form Updated Successfully',
+      message: 'Form Opened Successfully',
       statusCode: 200,
     };
 
     if (user.role == Role.Admin) {
-      this.formRepository
+      const formExists = await this.formRepository
+        .findOneByOrFail({ id })
+        .catch((error) => {
+          throw new NotFoundException('Form Not Found');
+        });
+
+      await this.formRepository
         .createQueryBuilder('form')
         .update(Form)
         .set({ status: FormStatus.open })
@@ -178,16 +205,13 @@ export class FormService {
       return formResponse;
     }
 
-    const formExistsAndBelongsTouser = await this.formRepository
-      .createQueryBuilder('form')
-      .select(['form', 'user'])
-      .innerJoinAndSelect('form.created_by', 'user')
-      .where('user.id = :userId', { userId: user.id })
-      .andWhere('form.id = :formId', { formId: id })
-      .getExists();
+    const formBelongsToUser: boolean = await this.getFormBelongsToUser(
+      request,
+      id,
+    );
 
-    if (!formExistsAndBelongsTouser) {
-      throw new UnauthorizedException('Cannot toggle form');
+    if (!formBelongsToUser) {
+      throw new HttpException('Form not found', 404);
     }
 
     await this.formRepository
@@ -211,11 +235,17 @@ export class FormService {
 
     const formResponse: FormReponse = {
       data: null,
-      message: 'Form Updated Successfully',
+      message: 'Form Closed Successfully',
       statusCode: 200,
     };
 
     if (user.role == Role.Admin) {
+      const formExists = await this.formRepository
+        .findOneByOrFail({ id })
+        .catch((error) => {
+          throw new NotFoundException('Form Not Found');
+        });
+
       this.formRepository
         .createQueryBuilder('form')
         .update(Form)
@@ -229,16 +259,13 @@ export class FormService {
       return formResponse;
     }
 
-    const formExistsAndBelongsTouser = await this.formRepository
-      .createQueryBuilder('form')
-      .select(['form', 'user'])
-      .innerJoinAndSelect('form.created_by', 'user')
-      .where('user.id = :userId', { userId: user.id })
-      .andWhere('form.id = :formId', { formId: id })
-      .getExists();
+    const formBelongsToUser: boolean = await this.getFormBelongsToUser(
+      request,
+      id,
+    );
 
-    if (!formExistsAndBelongsTouser) {
-      throw new UnauthorizedException('Cannot toggle form');
+    if (!formBelongsToUser) {
+      throw new HttpException('Form not found', 404);
     }
 
     await this.formRepository
