@@ -1,5 +1,5 @@
 import { MessageProvider } from "../_utils/hooks/useMessage";
-import ContextMessage from "./_helper_components/ContextMessage";
+import ContextMessage from "../_components/ContextMessage";
 
 export default function CommonLayout({
   children,

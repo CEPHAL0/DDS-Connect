@@ -2,7 +2,7 @@ import LoginForm from "@/app/_components/LoginForm";
 import survey_hero_image from "@/app/_assets/images/survey_hero_image.jpg";
 import Image from "next/image";
 import dds_logo_small_black from "@/app/_assets/images/dds_logo_small_black.png";
-import ContextMessage from "@/app/(routes)/_helper_components/ContextMessage";
+import ContextMessage from "@/app/_components/ContextMessage";
 
 export default function AuthLayout({
   children,

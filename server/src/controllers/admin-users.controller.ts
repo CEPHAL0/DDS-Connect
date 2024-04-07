@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Req,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -22,6 +23,7 @@ import { UpdateUserDto } from 'src/dtos/update-user.dto';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/types/role.enum';
 import { Public } from 'src/decorators/public.decorator';
+import { Request } from 'express';
 
 @Roles(Role.Admin)
 @Controller('admin/users')
@@ -32,6 +34,15 @@ export class UsersController {
   async getUsers(): Promise<UsersResponse> {
     const users = await this.userService.findAll();
     return users;
+  }
+
+  // @Roles(Role.Admin, Role.Member, Role.User)
+  @Public()
+  @Get('profile')
+  async getProfile(@Req() request: Request) {
+    console.log(request.cookies);
+    const response = await this.userService.getProfile(request);
+    return response;
   }
 
   @Get(':id')

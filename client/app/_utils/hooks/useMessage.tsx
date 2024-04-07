@@ -29,3 +29,16 @@ export const useMessage = (): MessageContextType => {
   }
   return context;
 };
+
+export const useSetMessage = () => {
+  const { message, setMessage } = useMessage();
+
+  const setMessageWithDelay = (message: string) => {
+    setMessage(message);
+    setTimeout(() => {
+      setMessage((prev) => "");
+    }, 3000);
+  };
+
+  return setMessageWithDelay;
+};

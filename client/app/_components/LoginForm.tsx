@@ -1,11 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import login from "@/app/api/auth/login";
+import login from "@/app/_api/auth/login";
 import { Formik, FormikHelpers, Form, Field } from "formik";
 import Link from "next/link";
 import { useState } from "react";
-import { useSetMessage } from "../_utils/hooks/useSetMessage";
+import { useSetMessage } from "../_utils/hooks/useMessage";
 
 export default function LoginForm() {
   const [error, setError] = useState(false);
@@ -32,7 +32,6 @@ export default function LoginForm() {
         setError(false);
         document.cookie = `${cookie}; SameSite=None; Secure`;
         router.push("/welcome");
-        router.refresh();
         setMessageWithDelay("Logged in successfully");
       }
     } catch (error: any) {

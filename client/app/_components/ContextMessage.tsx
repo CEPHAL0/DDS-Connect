@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useMessage } from "../../_utils/hooks/useMessage";
+import { useMessage } from "../_utils/hooks/useMessage";
 
 export default function ContextMessage() {
   const [messageVisibility, setMessageVisibility] = useState(false);

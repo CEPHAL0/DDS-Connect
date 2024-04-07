@@ -3,14 +3,15 @@
 import { useRouter } from "next/navigation";
 import { Formik, FormikHelpers, Form, Field } from "formik";
 import Link from "next/link";
-import register from "../api/auth/register";
+import register from "../_api/auth/register";
 import { useState } from "react";
-import { useMessage, MessageProvider } from "../_utils/hooks/useMessage";
+import { useSetMessage } from "../_utils/hooks/useMessage";
 
 export default function RegisterForm() {
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const { message, setMessage } = useMessage();
+
+  const setMessageWithDelay = useSetMessage();
 
   const router = useRouter();
 
@@ -38,7 +39,7 @@ export default function RegisterForm() {
       } else {
         setError(false);
 
-        setMessage("Registration Successful");
+        setMessageWithDelay("Registration Successful");
 
         router.push("/login");
       }

@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from 'src/dtos/create-user.dto';
 import { User } from 'src/entities/user.entity';
@@ -10,13 +10,32 @@ import {
 } from 'src/types/reponse-types/user-response';
 import { UpdateUserDto } from 'src/dtos/update-user.dto';
 import * as bcrypt from 'bcrypt';
+import { AuthService } from './auth.service';
+import { Request } from 'express';
 
 @Injectable()
 export class UsersService {
+  @Inject(forwardRef(() => AuthService))
+  private readonly authService: AuthService;
+
   public constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
+
+  async getProfile(request: Request): Promise<UserReponse> {
+    const user: User = await this.authService.getUserFromCookie(request);
+
+    const { password, ...userWithoutPassword } = user;
+
+    const userResponse: UserReponse = {
+      data: userWithoutPassword,
+      message: 'Retrieved User Profile Successfully',
+      statusCode: 200,
+    };
+
+    return userResponse;
+  }
 
   async findAll(): Promise<UsersResponse> {
     const users = await this.userRepository.find();

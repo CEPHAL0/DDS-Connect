@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { MessageProvider } from "./_utils/hooks/useMessage";
-import ContextMessage from "./(routes)/_helper_components/ContextMessage";
+import ContextMessage from "./_components/ContextMessage";
 
 import { cabin, satisfy, outfit } from "./_utils/fonts";
 

@@ -3,6 +3,8 @@ import {
   Injectable,
   UnauthorizedException,
   Logger,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/entities/user.entity';
@@ -19,8 +21,10 @@ import { Role } from 'src/types/role.enum';
 
 @Injectable()
 export class AuthService {
+  @Inject(forwardRef(() => AdminUsersService))
+  private readonly userService: AdminUsersService;
+
   constructor(
-    private userService: AdminUsersService,
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {}
@@ -87,7 +91,7 @@ export class AuthService {
       const user: User = await this.userService.findOneByUsername(username);
 
       return user;
-    } catch {
+    } catch (error) {
       throw new HttpException('Failed to retrieve user', 400);
     }
   }
