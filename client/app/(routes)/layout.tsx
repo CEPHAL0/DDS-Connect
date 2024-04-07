@@ -1,5 +1,3 @@
-"use client";
-
 import { MessageProvider } from "../_utils/hooks/useMessage";
 import ContextMessage from "./_helper_components/ContextMessage";
 
@@ -8,12 +6,5 @@ export default function CommonLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <section>
-      <MessageProvider>
-        <ContextMessage />
-        {children}
-      </MessageProvider>
-    </section>
-  );
+  return <section>{children}</section>;
 }

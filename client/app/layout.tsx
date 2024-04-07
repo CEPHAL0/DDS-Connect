@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { MessageProvider } from "./_utils/hooks/useMessage";
+import ContextMessage from "./(routes)/_helper_components/ContextMessage";
 
 import { cabin, satisfy, outfit } from "./_utils/fonts";
 
@@ -18,7 +20,12 @@ export default function RootLayout({
       lang="en"
       className={`${cabin.variable} ${satisfy.variable} ${outfit.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <MessageProvider>
+          <ContextMessage />
+          {children}
+        </MessageProvider>
+      </body>
     </html>
   );
 }

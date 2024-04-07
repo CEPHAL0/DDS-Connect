@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from "react";
 import { useMessage } from "../../_utils/hooks/useMessage";
 
@@ -22,7 +23,7 @@ export default function ContextMessage() {
   return (
     <div>
       {messageVisibility && (
-        <div className="absolute top-10 right-10 text-lightGreen px-10 py-2 bg-gray-50 border-2 font-semibold border-lightGreen rounded-md animate-bounce text-sm">
+        <div className="absolute top-10 right-10 text-lightGreen px-10 py-2 bg-gray-50 border-2 font-semibold border-lightGreen rounded-md animate-pulse text-sm">
           {message}
         </div>
       )}

@@ -1,3 +1,4 @@
+"use client";
 import React, { createContext, useState, useContext } from "react";
 
 interface MessageContextType {
@@ -7,7 +8,11 @@ interface MessageContextType {
 
 const MessageContext = createContext<MessageContextType | null>(null);
 
-export const MessageProvider = ({ children }: { children: any }) => {
+export const MessageProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [message, setMessage] = useState("");
 
   return (
