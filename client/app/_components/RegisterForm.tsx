@@ -1,12 +1,17 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import login from "@/app/api/auth/login";
 import { Formik, FormikHelpers, Form, Field } from "formik";
 import Link from "next/link";
 import register from "../api/auth/register";
+import { useState } from "react";
+import { useMessage, MessageProvider } from "../_utils/hooks/useMessage";
 
 export default function RegisterForm() {
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const { message, setMessage } = useMessage();
+
   const router = useRouter();
 
   const handleSubmit = async (
@@ -24,10 +29,19 @@ export default function RegisterForm() {
       const response = await register(values);
 
       if (response.statusCode != 200) {
-        throw new Error(response.message);
-      }
+        setError(true);
 
-      router.push("/login");
+        let message = Array.isArray(response.message)
+          ? response.message[0]
+          : response.message;
+        setErrorMessage(message);
+      } else {
+        setError(false);
+
+        setMessage("Registration Successful");
+
+        router.push("/login");
+      }
     } catch (error: any) {
       console.log(error.message);
     } finally {
@@ -77,12 +91,17 @@ export default function RegisterForm() {
             <Field
               id="password"
               name="password"
-              placeholder="********"
+              placeholder="●●●●●●●●"
               type="password"
               className=" bg-gray-100 px-2 py-2 rounded-md text-base font-light"
             />
           </div>
         </div>
+        {error ? (
+          <div className="text-sm text-red-500">{errorMessage}</div>
+        ) : (
+          ""
+        )}
         <button
           type="submit"
           className="bg-lightGreen rounded-md px-3 py-2 text-white min-w-64"

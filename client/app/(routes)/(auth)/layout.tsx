@@ -2,6 +2,7 @@ import LoginForm from "@/app/_components/LoginForm";
 import survey_hero_image from "@/app/_assets/images/survey_hero_image.jpg";
 import Image from "next/image";
 import dds_logo_small_black from "@/app/_assets/images/dds_logo_small_black.png";
+import ContextMessage from "@/app/(routes)/_helper_components/ContextMessage";
 
 export default function AuthLayout({
   children,
@@ -14,9 +15,10 @@ export default function AuthLayout({
         <Image
           src={survey_hero_image}
           className="absolute mix-blend-color-burn hidden md:block opacity-90 "
-          layout="responsive"
+          // layout="responsive"
           alt="Survey Illustration"
           quality={80}
+          priority
         />
         <p className="flex flex-col gap-4 items-center z-10">
           Re-Imagine
@@ -31,6 +33,7 @@ export default function AuthLayout({
             src={dds_logo_small_black}
             className="object-cover"
             alt="DDS Logo"
+            priority
           />
         </div>
         <div className="">{children}</div>
