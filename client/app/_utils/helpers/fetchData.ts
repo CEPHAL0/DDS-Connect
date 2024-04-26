@@ -6,7 +6,8 @@ import { HttpMethods } from "../types";
 export default async function fetchData(
   method: HttpMethods,
   urlName: string,
-  formData?: any
+  formData?: any,
+  extraHeaders?: HeadersInit
 ): Promise<Response> {
   var jsonFormData;
   if (formData) {
@@ -14,9 +15,13 @@ export default async function fetchData(
   }
 
   const options: RequestInit = {
-    headers: { "Content-Type": "application/json" },
     credentials: "include",
+    headers: { "Content-Type": "application/json" },
   };
+
+  if (extraHeaders) {
+    options.headers = { ...options.headers, ...extraHeaders };
+  }
 
   if (method == HttpMethods.post) {
     options.method = "POST";

@@ -2,13 +2,17 @@ import { cookies } from "next/headers";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
 export async function getCookie(cookieName: string): Promise<RequestCookie> {
-  const myCookies = cookies();
+  try {
+    const myCookies = cookies();
 
-  const cookie = myCookies.get(cookieName);
+    const cookie = myCookies.get(cookieName);
 
-  if (!cookie) {
-    throw new Error("Failed to retrieve cookie");
+    if (!cookie) {
+      return Promise.reject(`Failed to retrieve ${cookieName} cookie`);
+    }
+
+    return cookie;
+  } catch (error) {
+    return Promise.reject(`Failed to retrieve ${cookieName} cookie`);
   }
-
-  return cookie;
 }

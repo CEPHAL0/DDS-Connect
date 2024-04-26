@@ -1,12 +1,14 @@
 "use client";
-// import { useMessage } from "@/app/_utils/hooks/useMessage";
 import { useRouter } from "next/navigation";
 import { useSetMessage } from "../../_utils/hooks/useMessage";
+import { getProfiler } from "@/app/_api/auth/login";
 export default function Welcome() {
   const setMessageWithDelay = useSetMessage();
 
-  const handleClick = () => {
-    setMessageWithDelay("Clicked the button");
+  const handleClick = async () => {
+    await getProfiler().catch((error) => {
+      console.log(error.message);
+    });
   };
 
   return (
