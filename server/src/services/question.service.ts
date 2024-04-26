@@ -32,11 +32,12 @@ export class QuestionService {
   @Inject(forwardRef(() => ValueService))
   private valueService: ValueService;
 
+  @Inject(forwardRef(() => FormService))
+  private formService: FormService;
+
   public constructor(
     @InjectRepository(Question)
     private questionRepository: Repository<Question>,
-
-    private formService: FormService,
 
     private dataSource: DataSource,
   ) {}
@@ -119,8 +120,9 @@ export class QuestionService {
 
   async findOneById(id: number): Promise<QuestionResponse> {
     const question: Question = await this.questionRepository
-      .findOneByOrFail({
-        id,
+      .findOneOrFail({
+        where: { id: id },
+        relations: ['form', 'values'],
       })
       .catch((error) => {
         throw new HttpException('Question Not Found', 404);

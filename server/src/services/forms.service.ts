@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateFormDto } from 'src/dtos/create-form.dto';
@@ -14,21 +15,36 @@ import {
   FormReponse,
   FormsReponse,
 } from 'src/types/reponse-types/form-reponse';
-import { Repository } from 'typeorm';
+import { DataSource, QueryRunner, Repository } from 'typeorm';
 
 import { Request } from 'express';
 
 import { UpdateFormDto } from 'src/dtos/update-form.dto';
 import { AuthService } from './auth.service';
 import { Role } from 'src/types/role.enum';
+import { QuestionAnswerDto } from 'src/dtos/fill-form.dto';
+import { Question } from 'src/entities/question.entity';
+import { QuestionService } from './question.service';
+import { QuestionResponse } from 'src/types/reponse-types/question-response.type';
+import { Response } from 'src/entities/response.entity';
+import { AnswersService } from './answers.service';
 
 @Injectable()
 export class FormService {
+  @Inject(forwardRef(() => QuestionService))
+  private questionService: QuestionService;
+
+  @Inject(forwardRef(() => AnswersService))
+  private answersService: AnswersService;
+
   public constructor(
     @InjectRepository(Form)
     private formRepository: Repository<Form>,
 
+    @InjectRepository(Response)
+    private responseRepository: Repository<Response>,
     private authService: AuthService,
+    private dataSource: DataSource,
   ) {}
 
   async findAll(): Promise<FormsReponse> {
@@ -135,7 +151,6 @@ export class FormService {
     const user: User = await this.authService.getUserFromCookie(request);
 
     if (user.role == Role.Admin) {
-      
       const formExists = await this.formRepository
         .findOneByOrFail({ id })
         .catch((error) => {
@@ -279,5 +294,59 @@ export class FormService {
       });
 
     return formResponse;
+  }
+
+  async fillForm(
+    request: Request,
+    formId: number,
+    questionAnswersDto: QuestionAnswerDto[],
+  ) {
+    const form: Form = await this.formRepository
+      .findOneByOrFail({
+        id: formId,
+      })
+      .catch((error) => {
+        throw new HttpException('Form not found', 404);
+      });
+
+    const user: User = await this.authService.getUserFromCookie(request);
+
+    const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+
+    await queryRunner.startTransaction();
+
+    try {
+      const response: Response = await this.responseRepository.save({
+        form: form,
+        filled_by: user,
+      });
+
+      delete response.filled_by.password;
+
+      for (const questionAnswerDto of questionAnswersDto) {
+        const { questionId, answer } = questionAnswerDto;
+
+        const questionResponse: QuestionResponse =
+          await this.questionService.findOneById(questionId);
+
+        const question = questionResponse.data;
+        if (question.form.id != formId) {
+          throw new HttpException('Question doesnot belong to form', 400);
+        }
+
+        const savedAnswerResponse = await this.answersService.fillAnswer(
+          questionId,
+          response.id,
+          answer,
+        );
+
+        return savedAnswerResponse;
+      }
+    } catch (error) {
+      console.log(error.message);
+      throw new HttpException('Failed to fill form', 400);
+    }
   }
 }

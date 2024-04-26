@@ -36,11 +36,10 @@ export class UsersController {
     return users;
   }
 
-  // @Roles(Role.Admin, Role.Member, Role.User)
-  @Public()
+  @Roles(Role.Admin, Role.Member, Role.User)
+  // @Public()
   @Get('profile')
   async getProfile(@Req() request: Request) {
-    console.log(request.cookies);
     const response = await this.userService.getProfile(request);
     return response;
   }

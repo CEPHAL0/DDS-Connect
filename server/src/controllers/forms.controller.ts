@@ -24,6 +24,7 @@ import { User } from 'src/entities/user.entity';
 import { Request } from 'express';
 import { Public } from 'src/decorators/public.decorator';
 import { UpdateFormDto } from 'src/dtos/update-form.dto';
+import { QuestionAnswerDto } from 'src/dtos/fill-form.dto';
 
 @Roles(Role.Admin, Role.Member)
 @Controller('forms')
@@ -95,6 +96,22 @@ export class FormsController {
     const response = await this.formService.toggleFormStatusToClosed(
       request,
       id,
+    );
+
+    return response;
+  }
+
+  @Public()
+  @Post('/fill/:id')
+  async fillForm(
+    @Req() request: Request,
+    @Param('id') formId: number,
+    @Body() questionAnswerDtos: QuestionAnswerDto[],
+  ) {
+    const response = await this.formService.fillForm(
+      request,
+      formId,
+      questionAnswerDtos,
     );
 
     return response;

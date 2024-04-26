@@ -15,7 +15,7 @@ import { ValueService } from 'src/services/values.service';
     TypeOrmModule.forFeature([Question]),
     AuthModule,
     UsersModule,
-    FormsModule,
+    forwardRef(() => FormsModule),
     forwardRef(() => ValueModule),
   ],
   controllers: [QuestionsController],

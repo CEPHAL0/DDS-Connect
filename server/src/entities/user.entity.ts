@@ -1,6 +1,7 @@
 import { IsEmail, IsNotEmpty } from 'class-validator';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Form } from './form.entity';
+import { Response } from './response.entity';
 
 @Entity()
 export class User {
@@ -24,4 +25,9 @@ export class User {
 
   @OneToMany(() => Form, (form) => form.created_by, { cascade: true })
   forms: Form[];
+
+  @OneToMany(() => Response, (response) => response.filled_by, {
+    cascade: true,
+  })
+  responses: Response[];
 }

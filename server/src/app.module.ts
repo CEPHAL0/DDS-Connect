@@ -8,6 +8,7 @@ import { FormsModule } from './modules/forms.module';
 import { DatabaseConfig } from './config';
 import { QuestionsModule } from './modules/questions.module';
 import { ValueModule } from './modules/values.module';
+import { AnswersModule } from './modules/answer.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ValueModule } from './modules/values.module';
     FormsModule,
     QuestionsModule,
     ValueModule,
+    AnswersModule,
   ],
   controllers: [],
   providers: [],

@@ -10,6 +10,7 @@ import {
 import { User } from './user.entity';
 import { FormStatus } from 'src/types/form-status.enum';
 import { Question } from './question.entity';
+import { Response } from './response.entity';
 
 @Entity()
 export class Form {
@@ -39,4 +40,7 @@ export class Form {
 
   @OneToMany(() => Question, (question) => question.form, { cascade: true })
   questions: Question[];
+
+  @OneToMany(() => Response, (response) => response.form, { cascade: true })
+  responses: Response[];
 }

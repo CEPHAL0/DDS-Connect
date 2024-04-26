@@ -9,15 +9,13 @@ import {
 } from 'typeorm';
 import { Form } from './form.entity';
 import { Value } from './values.entity';
+import { User } from './user.entity';
 import { Answer } from './answer.entity';
 
 @Entity()
-export class Question {
+export class Response {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column({ type: 'text', width: 200 })
-  name: string;
 
   @CreateDateColumn()
   created_at: Date;
@@ -25,18 +23,20 @@ export class Question {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @Column({ type: 'enum', enum: ['Single', 'Multiple', 'Date', 'YesNo'] })
-  type: 'Single' | 'Multiple' | 'Date' | 'YesNo';
-
-  @ManyToOne(() => Form, (form) => form.questions, {
+  @ManyToOne(() => User, (user) => user.responses, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
+    nullable: false,
+  })
+  filled_by: User;
+
+  @ManyToOne(() => Form, (form) => form.responses, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    nullable: false,
   })
   form: Form;
 
-  @OneToMany(() => Value, (value) => value.question)
-  values: Value[];
-
-  @OneToMany(() => Answer, (answer) => answer.question, { cascade: true })
+  @OneToMany(() => Answer, (answer) => answer.response)
   answers: Answer[];
 }
