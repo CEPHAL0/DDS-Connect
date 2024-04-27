@@ -46,6 +46,10 @@ lerna-debug.log*
 .temp
 .tmp
 
+# Static Images
+src/public/images/**/*
+!src/public/**/.gitkeep
+
 # Runtime data
 pids
 *.pid

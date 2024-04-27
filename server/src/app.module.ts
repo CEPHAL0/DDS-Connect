@@ -9,6 +9,8 @@ import { DatabaseConfig } from './config';
 import { QuestionsModule } from './modules/questions.module';
 import { ValueModule } from './modules/values.module';
 import { AnswersModule } from './modules/answer.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -16,6 +18,9 @@ import { AnswersModule } from './modules/answer.module';
       isGlobal: true,
       cache: true,
       load: [DatabaseConfig],
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
