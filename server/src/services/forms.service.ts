@@ -12,7 +12,7 @@ import { Form } from 'src/entities/form.entity';
 import { User } from 'src/entities/user.entity';
 import { FormStatus } from 'src/types/form-status.enum';
 import {
-  FormReponse,
+  FormResponse,
   FormsReponse,
 } from 'src/types/reponse-types/form-reponse';
 import { DataSource, QueryRunner, Repository } from 'typeorm';
@@ -28,6 +28,7 @@ import { QuestionService } from './question.service';
 import { QuestionResponse } from 'src/types/reponse-types/question-response.type';
 import { Response } from 'src/entities/response.entity';
 import { AnswersService } from './answers.service';
+import { ApiResponse } from 'src/types/reponse-types/base-response.type';
 
 @Injectable()
 export class FormService {
@@ -68,7 +69,7 @@ export class FormService {
   async createForm(
     request: Request,
     createFormDto: CreateFormDto,
-  ): Promise<FormReponse> {
+  ): Promise<FormResponse> {
     const status = FormStatus.open;
 
     const user: User = await this.authService.getUserFromCookie(request);
@@ -80,7 +81,7 @@ export class FormService {
       throw new HttpException('Failed to create form', 400);
     });
 
-    const formResponse: FormReponse = {
+    const formResponse: FormResponse = {
       data: null,
       message: 'Form Created Successfully',
       statusCode: 200,
@@ -89,7 +90,7 @@ export class FormService {
     return formResponse;
   }
 
-  async findOneById(id: number): Promise<FormReponse> {
+  async findOneById(id: number): Promise<FormResponse> {
     const form = await this.formRepository.findOne({
       where: { id: id },
       relations: ['questions', 'questions.values', 'created_by'],
@@ -99,7 +100,7 @@ export class FormService {
       throw new HttpException('Form Not Found', 404);
     }
 
-    const formResponse: FormReponse = {
+    const formResponse: FormResponse = {
       data: form,
       message: 'Form Retrieved Successfully',
       statusCode: 200,
@@ -138,7 +139,7 @@ export class FormService {
 
     await this.formRepository.update(id, updateFormDto);
 
-    const formResponse: FormReponse = {
+    const formResponse: FormResponse = {
       data: null,
       message: 'Form Updated Successfully',
       statusCode: 200,
@@ -147,7 +148,7 @@ export class FormService {
     return formResponse;
   }
 
-  async removeOne(request: Request, id: number): Promise<FormReponse> {
+  async removeOne(request: Request, id: number): Promise<FormResponse> {
     const user: User = await this.authService.getUserFromCookie(request);
 
     if (user.role == Role.Admin) {
@@ -159,7 +160,7 @@ export class FormService {
 
       await this.formRepository.delete({ id });
 
-      const formResponse: FormReponse = {
+      const formResponse: FormResponse = {
         data: null,
         message: 'Form Deleted Successfully',
         statusCode: 200,
@@ -179,7 +180,7 @@ export class FormService {
 
     await this.formRepository.delete({ id });
 
-    const formResponse: FormReponse = {
+    const formResponse: FormResponse = {
       data: null,
       message: 'Form Deleted Successfully',
       statusCode: 200,
@@ -191,10 +192,10 @@ export class FormService {
   async toggleFormStatusToOpen(
     request: Request,
     id: number,
-  ): Promise<FormReponse> {
+  ): Promise<FormResponse> {
     const user = await this.authService.getUserFromCookie(request);
 
-    const formResponse: FormReponse = {
+    const formResponse: FormResponse = {
       data: null,
       message: 'Form Opened Successfully',
       statusCode: 200,
@@ -245,10 +246,10 @@ export class FormService {
   async toggleFormStatusToClosed(
     request: Request,
     id: number,
-  ): Promise<FormReponse> {
+  ): Promise<FormResponse> {
     const user = await this.authService.getUserFromCookie(request);
 
-    const formResponse: FormReponse = {
+    const formResponse: FormResponse = {
       data: null,
       message: 'Form Closed Successfully',
       statusCode: 200,
@@ -300,31 +301,44 @@ export class FormService {
     request: Request,
     formId: number,
     questionAnswersDto: QuestionAnswerDto[],
-  ) {
+  ): Promise<ApiResponse<null>> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+
     const form: Form = await this.formRepository
-      .findOneByOrFail({
-        id: formId,
+      .findOneOrFail({
+        where: { id: formId },
+        relations: ['questions'],
       })
       .catch((error) => {
         throw new HttpException('Form not found', 404);
       });
 
+    const questionsCountInForm = form.questions.length;
+    const questionsCountInRequest = questionAnswersDto.length;
+
+    if (questionsCountInForm != questionsCountInRequest) {
+      throw new HttpException('Please fill all questions of form', 400);
+    }
+
     const user: User = await this.authService.getUserFromCookie(request);
 
-    const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
+    const responseExistsForUser = await this.responseRepository.exists({
+      where: { filled_by: user },
+    });
 
-    await queryRunner.connect();
+    if (responseExistsForUser) {
+      throw new HttpException('User has already filled the form', 400);
+    }
+
+    const response: Response = await this.responseRepository.save({
+      form: form,
+      filled_by: user,
+    });
 
     await queryRunner.startTransaction();
-
     try {
-      const response: Response = await this.responseRepository.save({
-        form: form,
-        filled_by: user,
-      });
-
-      delete response.filled_by.password;
-
       for (const questionAnswerDto of questionAnswersDto) {
         const { questionId, answer } = questionAnswerDto;
 
@@ -336,17 +350,65 @@ export class FormService {
           throw new HttpException('Question doesnot belong to form', 400);
         }
 
-        const savedAnswerResponse = await this.answersService.fillAnswer(
-          questionId,
-          response.id,
-          answer,
-        );
-
-        return savedAnswerResponse;
+        const savedAnswerResponse = await this.answersService
+          .fillAnswer(questionId, response.id, answer)
+          .catch((error) => {
+            throw new Error('Failed to save answer');
+          });
       }
+
+      await queryRunner.commitTransaction();
+      return {
+        data: null,
+        message: 'Form Filled Successfully',
+        statusCode: 200,
+      };
     } catch (error) {
-      console.log(error.message);
-      throw new HttpException('Failed to fill form', 400);
+      await this.responseRepository.delete(response.id);
+      await queryRunner.rollbackTransaction();
+
+      throw new HttpException(error.message ?? 'Failed to fill form', 400);
+    } finally {
+      await queryRunner.release();
     }
+  }
+
+  async getResponsesForAForm(
+    id: number,
+    request: Request,
+  ): Promise<FormResponse> {
+    const user = await this.authService.getUserFromCookie(request);
+
+    if (user.role == 'admin') {
+      const form = await this.formRepository.findOne({
+        where: { id: id },
+        relations: [
+          'responses',
+          'responses.answers',
+          'responses.filled_by',
+          'responses.answers.question',
+          'responses.answers.question.values',
+        ],
+      });
+
+      form.responses.forEach((response) => {
+        delete response.filled_by.password;
+        response.answers.forEach((answer) => {
+          answer.question.values.forEach((value) => {
+            delete value.created_at;
+            delete value.updated_at;
+            delete value.id;
+          });
+        });
+      });
+
+      return {
+        data: form,
+        message: 'Retrieved all form responses successfully',
+        statusCode: 200,
+      };
+    }
+
+    const form = await this.getFormBelongsToUser(request, id);
   }
 }

@@ -18,7 +18,7 @@ export class User {
   password: string;
 
   @Column({ type: 'enum', enum: ['admin', 'member', 'user'] })
-  role: string;
+  role: 'admin' | 'member' | 'user';
 
   @Column({ unique: true })
   email: string;

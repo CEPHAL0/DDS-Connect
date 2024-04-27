@@ -23,7 +23,7 @@ export class CreateUserDto {
   @IsEnum(['admin', 'member', 'user'], {
     message: 'Role Must be one of the following: admin, member, user',
   })
-  role: string;
+  role: 'admin' | 'member' | 'user';
 
   @IsNotEmpty({ message: 'Password cannot be empty' })
   @MinLength(8, { message: 'Password must be atleast 8 characters long' })

@@ -15,7 +15,7 @@ import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { User } from 'src/entities/user.entity';
 import { Form } from 'src/entities/form.entity';
-import { FormReponse } from 'src/types/reponse-types/form-reponse';
+import { FormResponse } from 'src/types/reponse-types/form-reponse';
 import {
   QuestionResponse,
   QuestionsForASingleFormResponse,
@@ -63,7 +63,7 @@ export class QuestionService {
         throw new UnauthorizedException('Form doesnot belong to user');
       }
 
-      const formResponse: FormReponse =
+      const formResponse: FormResponse =
         await this.formService.findOneById(formId);
 
       const form: Form = formResponse.data;
@@ -149,7 +149,7 @@ export class QuestionService {
       },
     });
 
-    const formResponse: FormReponse =
+    const formResponse: FormResponse =
       await this.formService.findOneById(formId);
 
     const form: Form = formResponse.data;
@@ -169,7 +169,7 @@ export class QuestionService {
     formId: number,
     createQuestionsDto: CreateQuestionDto[],
   ) {
-    const formResponse: FormReponse =
+    const formResponse: FormResponse =
       await this.formService.findOneById(formId);
 
     const form: Form = formResponse.data;
@@ -266,7 +266,7 @@ export class QuestionService {
     request: Request,
     formId: number,
   ): Promise<ApiResponse<null>> {
-    const formResponse: FormReponse =
+    const formResponse: FormResponse =
       await this.formService.findOneById(formId);
 
     const form: Form = formResponse.data;

@@ -2,7 +2,7 @@ import { HttpException, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Answer } from 'src/entities/answer.entity';
 import { Response } from 'src/entities/response.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { QuestionService } from './question.service';
 import { QuestionResponse } from 'src/types/reponse-types/question-response.type';
 import { AnswerResponse } from 'src/types/reponse-types/answer-response.type';
@@ -17,6 +17,8 @@ export class AnswersService {
     private responseRepository: Repository<Response>,
     @InjectRepository(Answer)
     private answerRepository: Repository<Answer>,
+
+    private dataSource: DataSource,
   ) {}
 
   async fillAnswer(
@@ -33,8 +35,6 @@ export class AnswersService {
 
     const question = questionResponse.data;
 
-    console.log(question);
-
     if (question.type == 'Multiple') {
       const values = question.values;
 
@@ -43,6 +43,7 @@ export class AnswersService {
       }
 
       let matchFound: boolean = false;
+
       for (const value of values) {
         if (value.name === answer) {
           const savedAnswer: Answer = await this.answerRepository.save({
@@ -51,6 +52,7 @@ export class AnswersService {
             response: response,
             question: question,
           });
+
           matchFound = true;
 
           const answerResponse: AnswerResponse = {

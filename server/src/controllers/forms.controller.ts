@@ -17,7 +17,7 @@ import { Role } from 'src/types/role.enum';
 import { CreateFormDto } from '../dtos/create-form.dto';
 import { FormService } from 'src/services/forms.service';
 import {
-  FormReponse,
+  FormResponse,
   FormsReponse,
 } from 'src/types/reponse-types/form-reponse';
 import { User } from 'src/entities/user.entity';
@@ -45,7 +45,7 @@ export class FormsController {
     @Body() createFormDto: CreateFormDto,
     @Req() request: Request,
   ) {
-    const response: FormReponse = await this.formService.createForm(
+    const response: FormResponse = await this.formService.createForm(
       request,
       createFormDto,
     );
@@ -113,6 +113,15 @@ export class FormsController {
       formId,
       questionAnswerDtos,
     );
+    return response;
+  }
+
+  @Get('/responses/:id')
+  async getResponsesForAForm(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() request: Request,
+  ) {
+    const response = await this.formService.getResponsesForAForm(id, request);
 
     return response;
   }
