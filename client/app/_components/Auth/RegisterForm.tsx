@@ -3,9 +3,9 @@
 import { useRouter } from "next/navigation";
 import { Formik, FormikHelpers, Form, Field } from "formik";
 import Link from "next/link";
-import register from "../_api/auth/register";
+import register from "../../_api/auth/register";
 import { useState } from "react";
-import { useSetMessage } from "../_utils/hooks/useMessage";
+import { useSetMessage } from "../../_utils/hooks/useMessage";
 
 export default function RegisterForm() {
   const [error, setError] = useState(false);

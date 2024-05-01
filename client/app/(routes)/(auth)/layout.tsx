@@ -1,4 +1,4 @@
-import LoginForm from "@/app/_components/LoginForm";
+import LoginForm from "@/app/_components/Auth/LoginForm";
 import survey_hero_image from "@/app/_assets/images/survey_hero_image.jpg";
 import Image from "next/image";
 import dds_logo_small_black from "@/app/_assets/images/dds_logo_small_black.png";
