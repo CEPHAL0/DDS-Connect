@@ -10,6 +10,7 @@ import { useSetMessage } from "../_utils/hooks/useMessage";
 export default function LoginForm() {
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const setMessageWithDelay = useSetMessage();
 
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function LoginForm() {
     { setSubmitting }: FormikHelpers<{ username: string; password: string }>
   ) => {
     try {
+      setIsLoading(true);
       const { response, cookie } = await login(values);
 
       if (response.statusCode != 200) {
@@ -37,6 +39,7 @@ export default function LoginForm() {
     } catch (error: any) {
       console.log(error.message);
     } finally {
+      setIsLoading(false);
       setSubmitting(false);
     }
   };
@@ -68,15 +71,20 @@ export default function LoginForm() {
           />
         </div>
         {error ? (
-          <div className="text-sm text-red-500">{errorMessage}</div>
+          <div className="text-sm text-red-500 max-w-full w-56">
+            {errorMessage}
+          </div>
         ) : (
           ""
         )}
         <button
           type="submit"
-          className="bg-lightGreen rounded-md px-3 py-2 text-white"
+          className={` rounded-md px-3 py-2 text-white ${
+            isLoading ? "bg-gray-500" : "bg-lightGreen"
+          }`}
+          disabled={isLoading}
         >
-          Login
+          {!isLoading ? "Login" : "Logging in..."}
         </button>
         <Link href="/register" className="text-xs font-light  text-center">
           Don't have an account? <span className="text-blue-600">Register</span>

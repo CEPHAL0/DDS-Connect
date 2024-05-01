@@ -4,9 +4,6 @@ import type { NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   const token = request.cookies.get("jwt");
 
-  
-  
-
   if (!token) {
     return NextResponse.rewrite(new URL("/login", request.url));
   }

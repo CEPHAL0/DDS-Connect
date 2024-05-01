@@ -5,5 +5,5 @@ export class QuestionAnswerDto {
   questionId: number;
 
   @IsNotEmpty({ message: 'Answer cannot be empty' })
-  answer: string;
+  answer: string | Array<string>;
 }

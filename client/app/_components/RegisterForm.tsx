@@ -10,6 +10,7 @@ import { useSetMessage } from "../_utils/hooks/useMessage";
 export default function RegisterForm() {
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const setMessageWithDelay = useSetMessage();
 
@@ -27,6 +28,7 @@ export default function RegisterForm() {
     }>
   ) => {
     try {
+      setIsLoading(true);
       const response = await register(values);
 
       if (response.statusCode != 200) {
@@ -46,6 +48,7 @@ export default function RegisterForm() {
     } catch (error: any) {
       console.log(error.message);
     } finally {
+      setIsLoading(false);
       setSubmitting(false);
     }
   };
@@ -105,9 +108,12 @@ export default function RegisterForm() {
         )}
         <button
           type="submit"
-          className="bg-lightGreen rounded-md px-3 py-2 text-white min-w-64"
+          className={`rounded-md px-3 py-2 text-white min-w-64 ${
+            isLoading ? "bg-gray-500" : "bg-lightGreen"
+          }`}
+          disabled={isLoading}
         >
-          Register
+          {isLoading ? "Registering..." : "Register"}
         </button>
         <Link href="/login" className="text-xs font-light  text-center">
           Already have an account? <span className="text-blue-600">Login</span>

@@ -91,10 +91,16 @@ export class FormService {
   }
 
   async findOneById(id: number): Promise<FormResponse> {
-    const form = await this.formRepository.findOne({
-      where: { id: id },
-      relations: ['questions', 'questions.values', 'created_by'],
-    });
+    const form = await this.formRepository
+      .findOneOrFail({
+        where: { id: id },
+        relations: ['questions', 'questions.values', 'created_by'],
+      })
+      .catch((error) => {
+        throw new HttpException('Form not found', 404);
+      });
+
+    delete form.created_by.password;
 
     if (form == null) {
       throw new HttpException('Form Not Found', 404);
@@ -350,11 +356,11 @@ export class FormService {
           throw new HttpException('Question doesnot belong to form', 400);
         }
 
-        const savedAnswerResponse = await this.answersService
-          .fillAnswer(questionId, response.id, answer)
-          .catch((error) => {
-            throw new Error('Failed to save answer');
-          });
+        const savedAnswerResponse = await this.answersService.fillAnswer(
+          questionId,
+          response.id,
+          answer,
+        );
       }
 
       await queryRunner.commitTransaction();

@@ -79,7 +79,7 @@ export class QuestionService {
           throw new HttpException('Failed to save question', 400);
         });
 
-      if (createQuestionDto.type == QuestionType.multiple) {
+      if (createQuestionDto.values.length > 0) {
         const valuesResponse: ValuesResponse =
           await this.valueService.storeValuesForAQuestion(
             values,
@@ -181,7 +181,7 @@ export class QuestionService {
         ...question,
         form: form,
       });
-      if (question.type == QuestionType.multiple) {
+      if (createQuestionDto.values.length > 0) {
         const valueResponse = await this.valueService.storeValuesForAQuestion(
           values,
           savedQuestion.id,

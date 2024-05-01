@@ -1,7 +1,7 @@
 "use server";
 
 import { SERVER_URL } from "@/app/_utils/config";
-import fetchData from "@/app/_utils/helpers/fetchData";
+import fetchData from "@/app/_utils/helpers/fetchers";
 import { HttpMethods } from "@/app/_utils/types";
 
 async function register(formData: any): Promise<any> {

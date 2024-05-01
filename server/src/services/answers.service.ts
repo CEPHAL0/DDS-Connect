@@ -15,6 +15,7 @@ export class AnswersService {
   public constructor(
     @InjectRepository(Response)
     private responseRepository: Repository<Response>,
+
     @InjectRepository(Answer)
     private answerRepository: Repository<Answer>,
 
@@ -24,7 +25,7 @@ export class AnswersService {
   async fillAnswer(
     questionId: number,
     responseId: number,
-    answer: string,
+    answer: string | Array<string>,
   ): Promise<AnswerResponse> {
     const response: Response = await this.responseRepository.findOne({
       where: { id: responseId },
@@ -45,30 +46,62 @@ export class AnswersService {
       let matchFound: boolean = false;
 
       for (const value of values) {
-        if (value.name === answer) {
-          const savedAnswer: Answer = await this.answerRepository.save({
-            answer: value.name,
-            question_value: question.name,
-            response: response,
-            question: question,
-          });
-
-          matchFound = true;
-
-          const answerResponse: AnswerResponse = {
-            data: savedAnswer,
-            message: 'Saved answer successfully',
-            statusCode: 200,
-          };
-
-          return answerResponse;
+        for (const oneAnswer of answer) {
+          if (oneAnswer === value.name) {
+            matchFound = true;
+          }
         }
       }
 
       if (!matchFound) {
         throw new HttpException('Value doesnot match options', 400);
       }
+
+      var answerToSave: string;
+      if (Array.isArray(answer)) {
+        answerToSave = answer.join(',');
+      } else {
+        answerToSave = answer;
+      }
+      const savedAnswer: Answer = await this.answerRepository.save({
+        answer: answerToSave,
+        question_value: question.name,
+        response: response,
+        question: question,
+      });
+
+      matchFound = true;
+
+      const answerResponse: AnswerResponse = {
+        data: savedAnswer,
+        message: 'Saved answer successfully',
+        statusCode: 200,
+      };
+
+      return answerResponse;
     } else {
+      if (Array.isArray(answer)) {
+        throw new HttpException(
+          'Cannot save multiple values for Single type answer',
+          400,
+        );
+      }
+
+      var matchFound: boolean = false;
+      const values = question.values;
+
+      if (values.length > 0) {
+        for (const value of values) {
+          if (answer === value.name) {
+            matchFound = true;
+          }
+        }
+      }
+
+      if (!matchFound) {
+        throw new HttpException('Answer doesnot match value options', 400);
+      }
+
       const savedAnswer: Answer = await this.answerRepository
         .save({
           answer: answer,
@@ -77,6 +110,7 @@ export class AnswersService {
           response: response,
         })
         .catch((error) => {
+          console.log(error.message);
           throw new HttpException('Failed to save answer', 400);
         });
 
