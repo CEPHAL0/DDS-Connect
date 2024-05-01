@@ -1,8 +1,12 @@
 import { fetchForm } from "@/app/_utils/helpers/fetchers";
 import { Question } from "@/app/_utils/types";
+import { notFound } from "next/navigation";
 
 export default async function Page({ params }: { params: { id: number } }) {
   const formResponse = await fetchForm(params.id);
+  if (formResponse.statusCode == 404) {
+    notFound();
+  }
   const form = formResponse.data;
   const questions: Question[] = form.questions;
 

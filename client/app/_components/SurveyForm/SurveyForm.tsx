@@ -34,14 +34,6 @@ export default function Form({
         </div>
       </div>
 
-      {/* <div className="w-10 h-10 relative rounded-full overflow-clip flex">
-          <Image
-            src={Person}
-            alt="Form Creator"
-            fill
-            className="w-full h-full object-cover"
-          />
-        </div> */}
       <p className="text-sm text-gray-700 ">
         Created By-<span className="font-semibold">{creator}</span>
       </p>

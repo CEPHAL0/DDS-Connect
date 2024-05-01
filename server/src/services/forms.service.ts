@@ -76,13 +76,13 @@ export class FormService {
 
     const data = { ...createFormDto, status: status, created_by: user };
 
-    await this.formRepository.save(data).catch((e) => {
+    const form: Form = await this.formRepository.save(data).catch((e) => {
       console.log(e.message);
       throw new HttpException('Failed to create form', 400);
     });
 
     const formResponse: FormResponse = {
-      data: null,
+      data: form,
       message: 'Form Created Successfully',
       statusCode: 200,
     };

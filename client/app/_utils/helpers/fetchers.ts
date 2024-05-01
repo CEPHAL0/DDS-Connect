@@ -11,6 +11,7 @@ export default async function fetchData(
     credentials: "include",
     headers: { "Content-Type": "application/json" },
     method: method,
+    cache: "no-cache",
   };
 
   if (formData) {
@@ -29,14 +30,14 @@ export default async function fetchData(
 
 export async function fetchForm(id: number): Promise<ApiResponse<Form>> {
   const res = await fetchData("GET", `forms/${id}`);
-  if (!res.ok) {
-    throw new Error("Failed to retrieve form");
-  }
+  // if (!res.ok) {
+  //   throw new Error("Failed to retrieve form");
+  // }
 
   const response: ApiResponse<Form> = await res.json();
 
-  if (response.statusCode != 200) {
-    throw new Error("Form not found");
-  }
+  // if (response.statusCode != 200) {
+  //   throw new Error("Form not found");
+  // }
   return response;
 }

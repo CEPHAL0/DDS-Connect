@@ -1,7 +1,7 @@
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import fetchData from "../_utils/helpers/fetchers";
 import { getCookie } from "../_utils/helpers/getCookie";
-import Form from "../_components/Form";
+import Form from "../_components/SurveyForm/SurveyForm";
 
 export default async function Forms() {
   const jwtCookie: RequestCookie = await getCookie("jwt");
