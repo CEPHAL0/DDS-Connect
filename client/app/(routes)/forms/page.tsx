@@ -8,7 +8,7 @@ export default function Page() {
     <div className="m-4 flex flex-col gap-4">
       <Link
         href={"/forms/create"}
-        className="bg-lightGreen px-2 py-1 rounded-md text-white w-fit"
+        className="bg-lightGreen px-3 py-2 rounded-md text-white w-fit hover:shadow-xl"
       >
         Create Form
       </Link>

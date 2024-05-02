@@ -54,7 +54,9 @@ export default function CreateSurveyForm() {
               id="name"
               name="name"
               placeholder="My Form"
-              className=" border border-gray-600 p-4 rounded-md"
+              className={` border p-4 rounded-md ${
+                errors.name ? "border-red-500" : "border-gray-600"
+              }`}
               validate={validateName}
             />
           </div>

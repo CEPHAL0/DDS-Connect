@@ -1,17 +1,10 @@
-import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
-import fetchData from "../_utils/helpers/fetchers";
-import { getCookie } from "../_utils/helpers/getCookie";
+import { fetchForms } from "../_utils/helpers/fetchers";
 import Form from "../_components/SurveyForm/SurveyForm";
+import { ApiResponse, Form as FormType } from "../_utils/types";
 
 export default async function Forms() {
-  const jwtCookie: RequestCookie = await getCookie("jwt");
-  const cookieHeader: HeadersInit = {
-    Cookie: `jwt-${jwtCookie.value}`,
-  };
-
-  const res = await fetchData("GET", "forms", undefined, cookieHeader);
-
-  const response: any = await res.json();
+  const res = await fetchForms();
+  const response: ApiResponse<FormType[]> = await res.json();
 
   const forms = response.data;
 

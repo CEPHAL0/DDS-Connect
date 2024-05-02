@@ -1,5 +1,7 @@
+import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { SERVER_URL } from "../config";
 import { ApiResponse, Form } from "@/app/_utils/types";
+import { getCookie } from "./getCookie";
 
 export default async function fetchData(
   method: "GET" | "POST" | "PUT" | "PATCH",
@@ -25,6 +27,16 @@ export default async function fetchData(
 
   const res = await fetch(`${SERVER_URL}/${urlName}`, options);
 
+  return res;
+}
+
+export async function fetchForms() {
+  const jwtCookie: RequestCookie = await getCookie("jwt");
+  const cookieHeader: HeadersInit = {
+    Cookie: `jwt-${jwtCookie.value}`,
+  };
+
+  const res = await fetchData("GET", "forms", undefined, cookieHeader);
   return res;
 }
 
