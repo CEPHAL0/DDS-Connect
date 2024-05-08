@@ -1,6 +1,7 @@
 import { fetchForms } from "../_utils/helpers/fetchers";
 import Form from "../_components/SurveyForm/SurveyForm";
 import { ApiResponse, Form as FormType } from "../_utils/types";
+import Link from "next/link";
 
 export default async function Forms() {
   const res = await fetchForms();
@@ -10,17 +11,18 @@ export default async function Forms() {
 
   return (
     <div className="flex flex-col gap-3">
-      {forms.map((form: any) => {
+      {forms.map((form: FormType) => {
         const dateWithoutT = form.created_at.split("T")[0];
         return (
-          <Form
-            key={form.id}
-            name={form.name}
-            description={form.description ?? null}
-            created_date={dateWithoutT}
-            creator={form.created_by.username}
-            status={form.status}
-          />
+          <Link href={`/forms/${form.id}`} key={form.id}>
+            <Form
+              name={form.name}
+              description={form.description}
+              created_date={dateWithoutT}
+              creator={form.created_by.username}
+              status={form.status}
+            />
+          </Link>
         );
       })}
     </div>

@@ -3,7 +3,7 @@ import Person from "@/app/_assets/images/person.webp";
 
 interface FormProps {
   name: string;
-  description?: string;
+  description: string | null;
   created_date: string;
   status: "Open" | "Closed";
   creator: string;

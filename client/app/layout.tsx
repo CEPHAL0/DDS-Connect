@@ -18,7 +18,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${libfrnk.className}`}>
+    <html
+      lang="en"
+      className={`${libfrnk.className}`}
+      suppressHydrationWarning={true}
+    >
       <body>
         <MessageProvider>
           <ContextMessage />

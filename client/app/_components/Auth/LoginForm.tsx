@@ -33,7 +33,7 @@ export default function LoginForm() {
       } else {
         setError(false);
         document.cookie = `${cookie}; SameSite=None; Secure`;
-        router.push("/welcome");
+        router.push("/forms");
         setMessageWithDelay("Logged in successfully");
       }
     } catch (error: any) {

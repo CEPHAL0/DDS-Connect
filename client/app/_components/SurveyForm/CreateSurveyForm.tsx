@@ -41,8 +41,8 @@ export default function CreateSurveyForm() {
       onSubmit={handleSubmit}
     >
       {({ errors, touched, isValidating }) => (
-        <Form className="p-4 flex flex-col gap-4 w-[60vw]">
-          <h1 className="font-bold text-xl">Create Form</h1>
+        <Form className="p-4 flex flex-col gap-4 min-h-screen items-center justify-center">
+          <h1 className="font-bold text-4xl">Create Form</h1>
           <div className="flex flex-col gap-3">
             <div className="flex justify-between">
               <label htmlFor="">Name</label>
@@ -77,7 +77,7 @@ export default function CreateSurveyForm() {
               loading ? "bg-gray-600" : "bg-lightGreen"
             }`}
           >
-            {loading ? "Creating..." : "Create"}
+            {loading ? "Creating..." : "Create and Add Questions"}
           </button>
         </Form>
       )}
